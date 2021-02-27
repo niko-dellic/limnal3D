@@ -6,6 +6,8 @@ public class inGameTitle : MonoBehaviour
 {
     public GameObject projectTitle;
 
+    public float timeDelay = 13f;
+
     public AudioClip introSong;
 
     private float titleDelay;
@@ -20,7 +22,7 @@ public class inGameTitle : MonoBehaviour
 
         float introSongleng = introSong.length;
 
-        float titleDelay = invokeDelay + introSongleng - Time.time;
+        float titleDelay = invokeDelay + introSongleng - Time.time + timeDelay;
 
         float titleHideDelay = titleDelay + 5f;
 

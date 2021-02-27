@@ -12,10 +12,10 @@ public class InheritVelocity : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //if(other.gameObject == Player)
-        other.transform.parent = transform;
-        if(other.tag ==  "PLAYER_CLONE")
+        
+        if(other.tag ==  "PLAYER_CLONE" || other.tag == "HOST")
         {
-            
+            other.transform.parent = transform;
         }
     }
 
@@ -23,10 +23,10 @@ public class InheritVelocity : MonoBehaviour
     {
 
         //if(other.gameObject == Player)
-        other.transform.parent = null;
-        if(other.tag ==  "PLAYER_CLONE")
+        
+        if(other.tag ==  "PLAYER_CLONE" || other.tag == "HOST")
         {
-            
+            other.transform.parent = null;
         }   
 
     }

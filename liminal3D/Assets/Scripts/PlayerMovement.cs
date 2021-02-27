@@ -21,9 +21,11 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 
     [Header("TELEPORTATION")]
     [SerializeField] private Vector3 startPosition;
-
-    [SerializeField] private Vector3 lounge;
+    [SerializeField] private Vector3 matrix;
+    [SerializeField] private Vector3 station;
     [SerializeField] private Vector3 studiolo;
+    [SerializeField] private Vector3 lounge;
+
 
     [Header ("Viewport")]
     [SerializeField] Vector3 cameraOffset;
@@ -136,11 +138,23 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             startPosition = this.transform.position;
             //Debug.Log(startPosition);
 
-            //LOUNGE
-            lounge = GameObject.FindGameObjectWithTag("LOUNGE").transform.position;
+            //MATRIX
+            matrix = GameObject.FindGameObjectWithTag("MATRIX_TELEPORT").transform.position;
+            var matrixObj = GameObject.FindGameObjectWithTag("MATRIX_TELEPORT").GetComponent<MeshRenderer>().enabled = false;    
+
+            //STATION         
+            station = GameObject.FindGameObjectWithTag("STATION_TELEPORT").transform.position;
+            var stationObj = GameObject.FindGameObjectWithTag("STATION_TELEPORT").GetComponent<MeshRenderer>().enabled = false;               
 
             //STUDIOLO
             studiolo = GameObject.FindGameObjectWithTag("STUDIOLO_TELEPORT").transform.position;
+            var studioloObj = GameObject.FindGameObjectWithTag("STUDIOLO_TELEPORT").GetComponent<MeshRenderer>().enabled = false;   
+            
+            //LOUNGE
+            lounge = GameObject.FindGameObjectWithTag("LOUNGE").transform.position;
+            
+
+
 
 
         }
@@ -304,20 +318,33 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
                 this.transform.position = startPosition;
             }
 
-            // GO TO THE LOUNGE
+            // GO TO THE MATRIX
             if (Input.GetKeyDown("2"))
             {
-                this.transform.position = lounge;
+                this.transform.position = matrix;
+            }
+
+            // GO TO THE STATION
+            if (Input.GetKeyDown("3"))
+            {
+                this.transform.position = station;
             }
 
             // GO TO THE STUDY
-            if (Input.GetKeyDown("3"))
+            if (Input.GetKeyDown("4"))
             {
                 this.transform.position = studiolo;
             }
 
+            // GO TO THE LOUNGE
+            if (Input.GetKeyDown("5"))
+            {
+                this.transform.position = lounge;
+            }
+
+
+
             // BECOME HOST
-            
             
             if (Input.GetKeyDown(KeyCode.H))
             {

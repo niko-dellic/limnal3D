@@ -31,9 +31,9 @@ public class switchSky : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {       
-            //Debug.Log("altSky");
+            // Debug.Log("altSky");
 
-            if(other.tag ==  "PLAYER_CLONE")
+            if(other.tag ==  "PLAYER_CLONE" || other.tag == "HOST")
             {
                 if(altSky != null)
                 {
@@ -53,7 +53,7 @@ public class switchSky : MonoBehaviour
 
     private void OnTriggerExit(Collider other) 
     {       
-        if(other.tag ==  "PLAYER_CLONE")
+        if(other.tag ==  "PLAYER_CLONE" || other.tag == "HOST")
         {
             RenderSettings.skybox = regularSky;    
             RenderSettings.fogColor = defaultFogColor;    

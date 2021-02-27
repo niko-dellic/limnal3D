@@ -10,18 +10,31 @@ public class TeleportPlayer : MonoBehaviour
 
     public GameObject teleportObject;
 
+    public bool inheritRotation = true;
+
     private void Start()
     {
         teleportTarget = teleportObject.transform;
+        teleportTarget.GetComponent<MeshRenderer>().enabled = false;    
     }
+
 
     
     void OnTriggerEnter(Collider other)
     {
 
-        other.transform.position = teleportTarget.transform.position;
-        other.transform.rotation = teleportTarget.transform.rotation;   
-        
+
+        if (other.tag == "PLAYER_CLONE" || other.tag == "HOST")
+        {
+
+            other.transform.position = teleportTarget.transform.position;
+
+            if (inheritRotation)
+            {
+                other.transform.rotation = teleportTarget.transform.rotation;  
+            }
+
+        }
     }
 
     private void Update() {
