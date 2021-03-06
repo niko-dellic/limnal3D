@@ -6,14 +6,14 @@ public class canvasManager : MonoBehaviour
 {
 
     public static canvasManager instance;
+    public GameObject reticle;
 
-    [Header("Panels")]
-    [SerializeField] GameObject UI_Alive;
-    // [SerializeField] GameObject UI_Death;
+    public GameObject menu1;
+    public GameObject menu2;
+    public GameObject menu3;
 
-    [Header("Joysticks")]
-    public Joystick leftJoystick;
-    public Joystick rightJoystick;
+    
+
 
     private void Awake()
     {
@@ -28,23 +28,26 @@ public class canvasManager : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
         
-        HideUI();
+        // HideUI();
 
     }
 
-    public void ChangePlayerState(bool isAlive)
-    {
-        UI_Alive.SetActive(isAlive);
-        // UI_Death.SetActive(!isAlive);
-    }
+ void Update()
+ {
+   
+        if (!menu1.activeSelf && !menu2.activeSelf && !menu3.activeSelf)
+        {
 
-    public void HideUI()
-    {
-        UI_Alive.SetActive(false);
-        // UI_Death.SetActive(false);
-        
-
-    }
+            if(Input.GetKey(KeyCode.Mouse0))
+            {
+                reticle.SetActive(true);
+            }
+            else
+            {
+                reticle.SetActive(false);
+            }
+        }
+ }
 
 
 }

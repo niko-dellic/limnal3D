@@ -17,6 +17,9 @@ TagManager:
   - matrixPlane
   - STATION_TELEPORT
   - MATRIX_TELEPORT
+  - MYROOM_TELEPORT
+  - TELEPORT_ZONE
+  - MEDIA_PANES
   layers:
   - Default
   - TransparentFX

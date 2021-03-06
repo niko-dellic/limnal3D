@@ -4,20 +4,25 @@ using UnityEngine;
 
 public class disableChildren : MonoBehaviour
 {
-    public bool activeZone = true;
+    public bool activeZone = false;
     void OnTriggerEnter(Collider other)
     {
+        if (other.tag == "PLAYER_CLONE" || other.tag == "HOST")
+        {
         activeZone = true;    
+        }
     }
 
     void OnTriggerExit(Collider other)
     {
-        activeZone = false;      
+        if (other.tag == "PLAYER_CLONE" || other.tag == "HOST")
+        {
+        activeZone = false;  
+        }    
     }
 
     void Start()
     {
-          
     }
 
 

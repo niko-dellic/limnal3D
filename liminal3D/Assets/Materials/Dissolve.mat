@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Dissolve
   m_Shader: {fileID: 4800000, guid: f60b00c9668d7fa40af6c20a649abbea, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: RGE_Palette
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0

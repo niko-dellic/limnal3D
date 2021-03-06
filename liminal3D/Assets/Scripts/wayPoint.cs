@@ -48,58 +48,53 @@ public class wayPoint : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
 
-        var Vray = Camera.main.ViewportPointToRay(pos);
-        RaycastHit hit;
-        ray = Camera.main.ViewportPointToRay(pos);
+            var Vray = Camera.main.ViewportPointToRay(pos);
+            RaycastHit hit;
+            ray = Camera.main.ViewportPointToRay(pos);
         
 
-        if (Physics.Raycast(Vray, out hit))
-        {
+            if (Physics.Raycast(Vray, out hit))
+            {
+                float gumballScale = Mathf.Clamp((Mathf.Log(hit.distance)/remapFactor), smallScale, largeScale);
+                markerDistanceScale = new Vector3 (gumballScale, gumballScale, gumballScale);
+                marker.transform.localScale = markerDistanceScale;
 
-
-            //Debug.Log("WORKING!");
-
-            float gumballScale = Mathf.Clamp((Mathf.Log(hit.distance)/remapFactor), smallScale, largeScale);
-            markerDistanceScale = new Vector3 (gumballScale, gumballScale, gumballScale);
-            marker.transform.localScale = markerDistanceScale;
-
-        }
+            }
         
 
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-
-            if (menu1.activeSelf || menu2.activeSelf)
+            if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                disablePointer = true;
-                //Debug.Log("it works!");
+
+                if (menu1.activeSelf || menu2.activeSelf)
+                {
+                    disablePointer = true;
+                    //Debug.Log("it works!");
+                }
+                else
+                {
+                    disablePointer = false;
+                }
+
+                if (!disablePointer)
+                {
+                    activatePointer = true;
+                    Rigidbody rigidbody = marker.GetComponent<Rigidbody>();
+                    rigidbody.useGravity = false;
+                    SphereCollider sphereCollider = marker.GetComponent<SphereCollider>();
+                    sphereCollider.enabled = false;
+                }
+
             }
-            else
+
+            if (!disablePointer && activatePointer && Physics.Raycast(ray, out hit, 100, ~IgnoreMe))
             {
-                disablePointer = false;
+                marker.transform.position = hit.point;
+                pointerReticle.SetActive(true);
+                marker.SetActive(true);
+                instantiatePoint.transform.position = hit.point;
+                //Debug.Log(instantiatePoint);      
             }
-
-            if (!disablePointer)
-            {
-            activatePointer = true;
-            Rigidbody rigidbody = marker.GetComponent<Rigidbody>();
-            rigidbody.useGravity = false;
-
-            SphereCollider sphereCollider = marker.GetComponent<SphereCollider>();
-            sphereCollider.enabled = false;
-            }
-
         }
-
-        if (!disablePointer && activatePointer && Physics.Raycast(ray, out hit, 100, ~IgnoreMe))
-        {
-            // lineRend.enabled = true;
-            marker.transform.position = hit.point;
-            pointerReticle.SetActive(true);
-            marker.SetActive(true);
-            instantiatePoint.transform.position = hit.point;
-            //Debug.Log(instantiatePoint);      
-        }}
 
         if (!disablePointer && Input.GetKeyUp(KeyCode.Mouse0))
         {
@@ -115,12 +110,8 @@ public class wayPoint : MonoBehaviour
 
         if (!activatePointer)
         {
-            // lineRend.enabled = false;
-            // rayObject.SetActive(false);
             pointerReticle.SetActive(false);
-            marker.SetActive(false);
-            //Debug.Log(activatePointer);
-            
+            marker.SetActive(false);    
         }
 
     }

@@ -6,47 +6,64 @@ public class inGameTitle : MonoBehaviour
 {
     public GameObject projectTitle;
 
-    public float timeDelay = 13f;
+    // public float timeDelay = 13f;
 
+    [Header("Title Timing")]
     public AudioClip introSong;
+    public AudioClip robotInterupt;
+    public float bonusBuffer = 0f;
+    public float titleDisplayDuration = 5f;
+    
+    private float introSongleng;
 
-    private float titleDelay;
-    private float titleHideDelay;
+    // private float titleDelay;
+    // private float titleHideDelay;
 
-    // public AudioManager[] audioIntro;
+    // private bool singlePlay = true;
+
+    private float pressedDelay = 0;
+
     void Awake()
     {
         projectTitle.SetActive(false);
         
-        float invokeDelay = GameObject.Find("CustomAudioManager").GetComponent<CustomAudioManager>().longDelay;  //gameObject.GetComponent<CustomAudioManager>().longDelay;
+        introSongleng = introSong.length + robotInterupt.length;
 
-        float introSongleng = introSong.length;
+        pressedDelay = GameObject.Find("CustomAudioManager").GetComponent<CustomAudioManager>().soundTimeDelay;
 
-        float titleDelay = invokeDelay + introSongleng - Time.time + timeDelay;
 
-        float titleHideDelay = titleDelay + 5f;
+        // float invokeDelay = GameObject.Find("CustomAudioManager").GetComponent<CustomAudioManager>().longDelay;           
 
-        //Debug.Log(titleDelay + "delay title" + titleHideDelay + "hide title");        
+        // float titleDelay = invokeDelay + introSongleng - Time.time + timeDelay;
+
+        // float titleHideDelay = titleDelay + 5f;    
         
-        Invoke("displayTitle", titleDelay);
+        // Invoke("displayTitle", titleDelay);
 
-        Invoke("hideTitle", titleHideDelay);
-    }
-
-    public void displayTitle()
-    {
-        projectTitle.SetActive(true);
-    }
-
-    public void hideTitle()
-    {
-        projectTitle.SetActive(false);
+        // Invoke("hideTitle", titleHideDelay);
     }
 
 
-    // Update is called once per frame
     void Update()
     {
-        
+        if(pressedDelay == 0 && Input.GetKeyDown(KeyCode.T))
+        { 
+            pressedDelay = Time.time + bonusBuffer;
+        }
+
+        float totalDelay = introSongleng + pressedDelay + bonusBuffer;
+        float totalDuration = totalDelay + titleDisplayDuration;
+
+
+        if (totalDelay < Time.time && pressedDelay > 0)
+        {
+            projectTitle.SetActive(true);
+        }
+
+        if (totalDuration < Time.time && pressedDelay > 0)
+        {
+            projectTitle.SetActive(false);
+        }
+
     }
 }

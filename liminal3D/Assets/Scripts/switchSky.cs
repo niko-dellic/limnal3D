@@ -29,6 +29,20 @@ public class switchSky : MonoBehaviour
         defaultFogDistance = RenderSettings.fogDensity;
     }
 
+    
+    private void OnTriggerExit(Collider other) 
+    {       
+        if(other.tag ==  "PLAYER_CLONE" || other.tag == "HOST")
+        {
+            RenderSettings.skybox = regularSky;    
+            RenderSettings.fogColor = defaultFogColor;    
+            RenderSettings.ambientLight = defaultAmbientColor;
+            RenderSettings.fogDensity = defaultFogDistance;
+
+        }    
+    }   
+
+    
     private void OnTriggerEnter(Collider other) 
     {       
             // Debug.Log("altSky");
@@ -49,18 +63,6 @@ public class switchSky : MonoBehaviour
 
     }
 
-    
-
-    private void OnTriggerExit(Collider other) 
-    {       
-        if(other.tag ==  "PLAYER_CLONE" || other.tag == "HOST")
-        {
-            RenderSettings.skybox = regularSky;    
-            RenderSettings.fogColor = defaultFogColor;    
-            RenderSettings.ambientLight = defaultAmbientColor;
-            RenderSettings.fogDensity = defaultFogDistance;
-
-        }    
-    }     
+      
     
 }

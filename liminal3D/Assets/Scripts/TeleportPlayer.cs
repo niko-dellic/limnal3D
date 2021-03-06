@@ -5,6 +5,7 @@ using UnityEngine;
 public class TeleportPlayer : MonoBehaviour
 {
 
+    public GameObject localReference;
 
     private Transform teleportTarget; //variable for the teleportation position
 
@@ -27,12 +28,25 @@ public class TeleportPlayer : MonoBehaviour
         if (other.tag == "PLAYER_CLONE" || other.tag == "HOST")
         {
 
-            other.transform.position = teleportTarget.transform.position;
+            if (localReference != null)
+            {
+                localReference.GetComponent<MeshRenderer>().enabled = false;
+                Vector3 displacement = other.transform.position - localReference.transform.position;
+                other.transform.position = teleportTarget.transform.position + displacement;
+            }
+
+            else
+            {
+                other.transform.position = teleportTarget.transform.position;
+            }
+            
 
             if (inheritRotation)
             {
                 other.transform.rotation = teleportTarget.transform.rotation;  
             }
+
+
 
         }
     }

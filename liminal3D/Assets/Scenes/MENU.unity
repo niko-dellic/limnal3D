@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 2fe9295fbd5e30c49bddaf48ad791785, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -1161,7 +1161,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8929313650158590926, guid: 4bef6dcf2fb4d224baa2ae7eebace8e0, type: 3}
       propertyPath: longDelay
-      value: 30
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8929313650158590926, guid: 4bef6dcf2fb4d224baa2ae7eebace8e0, type: 3}
       propertyPath: m_Enabled
@@ -2423,6 +2423,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 458640347}
   m_CullTransparentMesh: 1
+--- !u!1 &474015596 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8929313650158590927, guid: 4bef6dcf2fb4d224baa2ae7eebace8e0, type: 3}
+  m_PrefabInstance: {fileID: 183880651}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &474015599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474015596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20bce47249cb1aa46a2f504d6eef0756, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &492739005
 GameObject:
   m_ObjectHideFlags: 0

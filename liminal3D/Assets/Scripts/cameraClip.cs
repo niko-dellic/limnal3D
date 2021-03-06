@@ -6,7 +6,7 @@ public class cameraClip : MonoBehaviour
 {
     public float clipEndDistance;
 
-    private float defaultClipDistance;
+    public float defaultClipDistance = 1000f;
 
     private Camera playerCamera;
 
@@ -26,9 +26,7 @@ public class cameraClip : MonoBehaviour
 
     void Awake()
     {
-        defaultClipDistance = Camera.main.GetComponent<Camera>().farClipPlane;
 
-   
     }
 
     // void Update()

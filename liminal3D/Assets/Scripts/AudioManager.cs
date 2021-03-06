@@ -9,8 +9,13 @@ public class CustomAudioManager : MonoBehaviour
 
     public static CustomAudioManager instance;
 
-    public float shortDelay = 10f;
-    public float longDelay = 30f;
+    // public float shortDelay = 10f;
+    public float longDelay = 20f;
+
+    [HideInInspector]
+    public float soundTimeDelay = 0;
+
+    private bool singlePlay = true;
 
     // Start is called before the first frame update
     void Awake() 
@@ -40,25 +45,29 @@ public class CustomAudioManager : MonoBehaviour
     void Start ()
     {
         Play("SoundScape");
-        // Play("INTRO_SONG");
-        // Play("ROBOT");
-
-        Invoke("PlayDelayed", shortDelay);
-        Invoke("PlayLate", longDelay);
-
     }
 
-    public void PlayDelayed()
-    {
-        Play("WOMBOCOMBO");
-    }
+
     public void PlayLate()
     {
         Play("INTRO_SONG");
         Play("ROBOT");
     }
 
-    // Update is called once per frame
+    public void playIntro()
+    {
+        if(Input.GetKeyDown(KeyCode.T) && singlePlay == true)
+        {
+            singlePlay = false; //disable the script from playing twice
+            soundTimeDelay = Time.time; //get time at which i press the button
+
+            Play("WOMBOCOMBO");
+            Invoke("PlayLate", longDelay);
+        }
+
+
+    }
+
     public void Play (string name)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
@@ -68,5 +77,10 @@ public class CustomAudioManager : MonoBehaviour
             return;
         }
         s.source.Play();
+    }
+
+    void Update()
+    {
+        playIntro();
     }
 }

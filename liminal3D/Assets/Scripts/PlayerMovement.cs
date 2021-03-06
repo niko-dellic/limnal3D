@@ -6,6 +6,29 @@ using Mirror;
 
 public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 {
+    
+    //RAYCASTING
+    [Header("PROJECTILE (RAYCAST AND GUMBALL PREFAB)")]
+    // [SerializeField] public LayerMask IgnoreMe;
+    [SerializeField] [Range(1f,5f)] public float remapFactor = 3f;
+    [SerializeField] [Range(0.0f,0.3f)] public float smallScale= 0.1f;
+    [SerializeField] [Range(1f,10f)] public float largeScale = 5f;
+    // private bool disablePointer = false;
+    // private bool activatePointer = false;
+    private Vector3 markerDistanceScale; 
+    Vector3 pos = new Vector3(0.5f,0.5f,0);
+    Ray ray;
+    
+    //TANK STUFF
+
+     public GameObject projectilePrefab;
+    public Transform projectileMount;
+    private Vector3 rayPosition;
+
+
+    //TANK STUFF END
+
+
 
     [Header("Host Settings")]
     
@@ -13,23 +36,29 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
     private bool host;
     private float hostTime = 0f;
 
-    // [SyncVar]
+    //[SyncVar]
     public Material hostMaterial;
 
-    // [SyncVar]
     private Material defaultMaterial;
 
     [Header("TELEPORTATION")]
-    [SerializeField] private Vector3 startPosition;
-    [SerializeField] private Vector3 matrix;
-    [SerializeField] private Vector3 station;
-    [SerializeField] private Vector3 studiolo;
-    [SerializeField] private Vector3 lounge;
+    private float teleportID;
+    public float teleportBuffer;
+
+    private float teleportTimer;
+
+    private Vector3 teleportZone;
+    private Vector3 startPosition;
+    private Vector3 myRoom;
+    private Vector3 matrix;
+    private Vector3 station;
+    private Vector3 studiolo;
+    private Vector3 lounge;
 
 
     [Header ("Viewport")]
     [SerializeField] Vector3 cameraOffset;
-    public float mouseSensitivity = 50f;
+    [SerializeField] public float mouseSensitivity = 50f;
     [SerializeField] float maxCameraX = 65f;
     [SerializeField] float minCameraX = -65f;
     float xRotation = 0f;
@@ -90,18 +119,17 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
     Vector3 velocity;
     bool isGrounded;
 
-    // [Header("ADMIN")]
-    // public GameObject[] players;
-
 
 
     void Start()
     {
+        defaultMaterial = transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material;
+
         if (isLocalPlayer)
         {
 
             //GET DEFAULT TEXTURE
-            defaultMaterial = transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material;
+            
 
             //SET CAMERA
             Camera.main.transform.SetParent(transform);
@@ -134,9 +162,15 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 
             //TELEPORTING!!
 
+            //TELEPORT ZONE
+            teleportZone = GameObject.FindGameObjectWithTag("TELEPORT_ZONE").transform.position;
+
             //PLAYER ORIGIN
             startPosition = this.transform.position;
-            //Debug.Log(startPosition);
+            
+            //MyRoom
+            myRoom = GameObject.FindGameObjectWithTag("MYROOM_TELEPORT").transform.position;
+            var myRoomObj = GameObject.FindGameObjectWithTag("MYROOM_TELEPORT").GetComponent<MeshRenderer>().enabled = false;    
 
             //MATRIX
             matrix = GameObject.FindGameObjectWithTag("MATRIX_TELEPORT").transform.position;
@@ -153,9 +187,6 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             //LOUNGE
             lounge = GameObject.FindGameObjectWithTag("LOUNGE").transform.position;
             
-
-
-
 
         }
     }
@@ -314,74 +345,206 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             
             // RESPAWN CHARACTER
             if (Input.GetKeyDown("1"))
-            {               
-                this.transform.position = startPosition;
+            {   
+                teleportID = 1;
+                teleportTimer = Time.time;
+
+                this.transform.position = teleportZone;
+
+            }
+
+            // GO TO MY ROOM
+            if (Input.GetKeyDown("2"))
+            {   
+                teleportID = 2;
+                teleportTimer = Time.time;
+                
+                this.transform.position = teleportZone;
             }
 
             // GO TO THE MATRIX
-            if (Input.GetKeyDown("2"))
-            {
-                this.transform.position = matrix;
+            if (Input.GetKeyDown("3"))
+            {   
+                teleportID = 3;
+                teleportTimer = Time.time;
+                
+                this.transform.position = teleportZone;
             }
 
             // GO TO THE STATION
-            if (Input.GetKeyDown("3"))
-            {
-                this.transform.position = station;
+            if (Input.GetKeyDown("4"))
+            {  
+                teleportID = 4; 
+                teleportTimer = Time.time;
+
+                this.transform.position = teleportZone;
             }
 
             // GO TO THE STUDY
-            if (Input.GetKeyDown("4"))
-            {
-                this.transform.position = studiolo;
-            }
-
-            // GO TO THE LOUNGE
             if (Input.GetKeyDown("5"))
-            {
-                this.transform.position = lounge;
+            {   
+                teleportID = 5;
+                teleportTimer = Time.time;
+                
+                this.transform.position = teleportZone;
+            }
+
+            // GO TO THE Lounge
+            if (Input.GetKeyDown("6"))
+            {   
+                teleportID = 6;
+                teleportTimer = Time.time;
+                this.transform.position = teleportZone;
             }
 
 
-
-            // BECOME HOST
-            
-            if (Input.GetKeyDown(KeyCode.H))
-            {
-                hostTime = 1 + hostTime;
-            }
-
-            if (hostTime > 5f)
-            {
-                host = true;
-            }
-
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                host = false;
-            }
-
-            if (host)
-            {
-                this.gameObject.tag = "HOST";
-                transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material  = hostMaterial;
-
-            }
-
-            if (!host)
-            {
-                this.gameObject.tag = "PLAYER_CLONE";
-                transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material  = defaultMaterial;
-            }
 
 
         }
     }
 
+    //BECOME HOST
+
+    [Command]
+    void CmdBecomeHost()
+    {
+        if (isLocalPlayer)
+        {
+            if (host)
+            {
+                this.gameObject.tag = "HOST";
+                transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material = hostMaterial;
+            }      
+        }
+    }
+
+    // [ClientRpc]
+    // void RpcShowHost()
+    // {
+
+    // }
+
+
+    //TANK STUFF HERE
+        [Command]
+        void CmdFire()
+        {
+            GameObject projectile = Instantiate(projectilePrefab, projectileMount.position, transform.rotation); 
+            // GameObject projectile = Instantiate(projectilePrefab, rayPosition, transform.rotation);
+            NetworkServer.Spawn(projectile);
+            // RpcOnFire();
+        }
+
+        
+        // this is called on the server
+
+        // this is called on the tank that fired for all observers
+        [ClientRpc]
+        void RpcOnFire()
+        {
+            GameObject projectile = Instantiate(projectilePrefab, projectileMount.position, transform.rotation);
+            // GameObject projectile = Instantiate(projectilePrefab, rayPosition, transform.rotation); 
+            NetworkServer.Spawn(projectile);
+        }
+
+
+    //TANK END
+
 
     void Update()
     {
         HandleMovement();
+        
+        //TANK STUFF
+
+        if (!isLocalPlayer) return;
+
+        //RAYCAST
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            CmdFire();
+
+            var Vray = Camera.main.ViewportPointToRay(pos);
+            RaycastHit hit;
+            ray = Camera.main.ViewportPointToRay(pos);
+
+            if (Physics.Raycast(Vray, out hit))
+            {
+                float gumballScale = Mathf.Clamp((Mathf.Log(hit.distance)/remapFactor), smallScale, largeScale);
+                markerDistanceScale = new Vector3 (gumballScale, gumballScale, gumballScale);
+                //projectilePrefab.transform.localScale = markerDistanceScale;
+                rayPosition = hit.point;
+            }
+                
+           
+        }
+        
+        //TANK STUFF + RAYCAST END
+       
+        
+
+        // BECOME HOST
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            hostTime = 1 + hostTime;
+        }
+
+        if (hostTime > 5f)
+        {
+            host = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            host = false;
+            hostTime = 0;
+            transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material  = defaultMaterial;
+            this.gameObject.tag = "PLAYER_CLONE";
+        }
+        
+        if (host)
+        {
+            CmdBecomeHost();
+        }
+
+
+        //TELEPORTING
+        if(teleportID == 1 && teleportTimer + teleportBuffer < Time.time)
+        {
+            teleportID = 0;
+            this.transform.position = startPosition;
+        }
+
+        if(teleportID == 2 && teleportTimer + teleportBuffer < Time.time)
+        {
+            teleportID = 0;
+            this.transform.position = myRoom;
+        }
+
+        if(teleportID == 3 && teleportTimer + teleportBuffer < Time.time)
+        {
+            teleportID = 0;
+            this.transform.position = matrix;
+        }
+
+        if(teleportID == 4 && teleportTimer + teleportBuffer < Time.time)
+        {
+            teleportID = 0;
+            this.transform.position = station;
+        }
+
+        if(teleportID == 5 && teleportTimer + teleportBuffer < Time.time)
+        {
+            teleportID = 0;
+            this.transform.position = studiolo;
+        }
+
+        if(teleportID == 6 && teleportTimer + teleportBuffer < Time.time)
+        {
+            teleportID = 0;
+            this.transform.position = lounge;
+        }
+
 
     }
 

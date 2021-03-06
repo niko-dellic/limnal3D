@@ -53,7 +53,7 @@ public class randomPlanes : MonoBehaviour
     public float bonusListSpeed;
 
     // PARAM END
-    
+
     private float randomScale;
 
     private Vector3 aspectRatio = new Vector3(1.7f,1,1); 
@@ -63,6 +63,8 @@ public class randomPlanes : MonoBehaviour
     private Vector3 localxyz;
 
     private Vector3 centroid;
+
+    private GameObject[] activatedPlanes;
 
     
     void Awake() 
@@ -86,7 +88,49 @@ public class randomPlanes : MonoBehaviour
     void Start()
     {
         localxyz = this.transform.position;
-        centroid = GetComponent<Collider>().bounds.center;        
+        centroid = GetComponent<Collider>().bounds.center; 
+        activatedPlanes = GameObject.FindGameObjectsWithTag("MEDIA_PANES");       
+    }
+
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "PLAYER_CLONE" || other.tag == "HOST")
+        {
+      
+            foreach (GameObject i in activatedPlanes)
+            {
+
+                //random velocity
+                Vector3 planeVector1 = new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f));
+
+                //apply rigidbody
+                if (i.GetComponent<Rigidbody>() == null)
+                {
+                    i.AddComponent<Rigidbody>();
+                }
+
+                i.GetComponent<Rigidbody>().useGravity = false;  
+                i.GetComponent<Rigidbody>().isKinematic = false;  
+                i.GetComponent<Rigidbody>().velocity = planeVector1*speed;
+                i.GetComponent<Rigidbody>().angularVelocity = ((planeVector1*speed)/slowAngularRotation);
+                i.GetComponent<Rigidbody>().angularDrag = 0;   
+            }
+
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+       if (other.tag == "PLAYER_CLONE" || other.tag == "HOST")
+       { 
+            
+            foreach (GameObject i in activatedPlanes)
+            {
+                //disable rigidbody
+                i.GetComponent<Rigidbody>().isKinematic = true;  
+            }
+       }    
     }
 
     private void OnEnable()
@@ -115,6 +159,7 @@ public class randomPlanes : MonoBehaviour
             Vector3 planeVector1 = new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f));
             GameObject videoPlanes = GameObject.CreatePrimitive(PrimitiveType.Plane);
             videoPlanes.name = "videoPlane";
+            videoPlanes.tag = "MEDIA_PANES";
             
             //create the video players
             var videoShell = gameObject.AddComponent<UnityEngine.Video.VideoPlayer>();
@@ -139,10 +184,11 @@ public class randomPlanes : MonoBehaviour
             // physics velocity and direction and rotation
             videoPlanes.GetComponent<MeshCollider>().convex = true;
             videoPlanes.GetComponent<MeshCollider>().isTrigger = true;
-            videoPlanes.AddComponent<Rigidbody>().useGravity = false;
-            videoPlanes.GetComponent<Rigidbody>().velocity = planeVector1*speed;
-            videoPlanes.GetComponent<Rigidbody>().angularVelocity = ((planeVector1*speed)/slowAngularRotation);
-            videoPlanes.GetComponent<Rigidbody>().angularDrag = 0;
+            
+            // videoPlanes.AddComponent<Rigidbody>().useGravity = false;
+            // videoPlanes.GetComponent<Rigidbody>().velocity = planeVector1*speed;
+            // videoPlanes.GetComponent<Rigidbody>().angularVelocity = ((planeVector1*speed)/slowAngularRotation);
+            // videoPlanes.GetComponent<Rigidbody>().angularDrag = 0;
 
             //ASSIGN MATERIALS
             Renderer vidMats = videoPlanes.GetComponent<Renderer>();
@@ -164,6 +210,7 @@ public class randomPlanes : MonoBehaviour
             Vector3 planeVector1 = new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f));
             GameObject imagePlanes = GameObject.CreatePrimitive(PrimitiveType.Plane);
             imagePlanes.name = "imagePlane";
+            imagePlanes.tag = "MEDIA_PANES";
             
             //Initial transform + Rotation
             Vector3 randomPlacement = new Vector3(Random.Range(-randomDisplacement,randomDisplacement), Random.Range(-randomDisplacement,randomDisplacement), Random.Range(-randomDisplacement,randomDisplacement));
@@ -174,10 +221,12 @@ public class randomPlanes : MonoBehaviour
             // physics velocity and direction and rotation
             imagePlanes.GetComponent<MeshCollider>().convex = true;
             imagePlanes.GetComponent<MeshCollider>().isTrigger = true;
-            imagePlanes.AddComponent<Rigidbody>().useGravity = false;
-            imagePlanes.GetComponent<Rigidbody>().velocity = planeVector1*speed;
-            imagePlanes.GetComponent<Rigidbody>().angularVelocity = (((planeVector1*speed)/slowAngularRotation)*bonusListSpeed);
-            imagePlanes.GetComponent<Rigidbody>().angularDrag = 0;
+
+
+            // imagePlanes.AddComponent<Rigidbody>().useGravity = false;
+            // imagePlanes.GetComponent<Rigidbody>().velocity = planeVector1*speed;
+            // imagePlanes.GetComponent<Rigidbody>().angularVelocity = (((planeVector1*speed)/slowAngularRotation)*bonusListSpeed);
+            // imagePlanes.GetComponent<Rigidbody>().angularDrag = 0;
 
             //Plane Mat + scale plane
             Material selectImageMaterial =  bonusPlaneMaterial[Random.Range(0, bonusPlaneMaterial.Length)];

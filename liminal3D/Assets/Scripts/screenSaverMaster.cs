@@ -56,10 +56,12 @@ public class screenSaverMaster : MonoBehaviour
         if (Time.time - lastIdleTime > AFKTimeout)
         {
             AFK = true;
+ 
         }
         else
         {
             AFK = false;
+
         }
     }
 
@@ -69,7 +71,7 @@ public class screenSaverMaster : MonoBehaviour
         if (AFK)
         {
             //Disable Main Cameras
-            mainCam.enabled = false;
+            // mainCam.enabled = false;
             cameraSwitch = Time.time;
 
             //SWITCH TO AFK CAMERAS
@@ -91,6 +93,7 @@ public class screenSaverMaster : MonoBehaviour
 
             displayAFKCam.enabled = true;
             otherAFKCam.enabled = false;
+
 
             //ENABLE PROPS
             foreach (GameObject i in screenSaverProps)
