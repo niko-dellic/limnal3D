@@ -26,6 +26,7 @@ public class changePostProandRes : MonoBehaviour
     private int defaultCamWidth;
     private int defaultCamHeight;
     private Vignette vg;
+    private float defaultVignette;
 
     private Bloom bl;
 
@@ -56,6 +57,7 @@ public class changePostProandRes : MonoBehaviour
         defaultCAb = cAb.intensity.value;
         defaultFilmGrain = fg.intensity.value;
         defaultBloomIntensity = bl.intensity.value;
+        defaultVignette = vg.intensity.value;
 
         
 
@@ -87,6 +89,7 @@ public class changePostProandRes : MonoBehaviour
             bl.threshold.value = 0;
             fg.intensity.value = 0;
             bl.intensity.value = 1;
+            vg.intensity.value = 0.315f;
 
             //Enable sun
             RenderSettings.sun.enabled = false;
@@ -100,6 +103,7 @@ public class changePostProandRes : MonoBehaviour
 
         if(other.tag ==  "PLAYER_CLONE" || other.tag == "HOST")
         {
+            vg.intensity.value = defaultVignette;
             cAb.intensity.value = defaultCAb;
             bl.threshold.value = defaultBlThreshold;
             fg.intensity.value = defaultFilmGrain;

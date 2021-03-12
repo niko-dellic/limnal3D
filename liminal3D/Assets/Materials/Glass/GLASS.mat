@@ -84,13 +84,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_00cc802c9cd7468aa13ffffa9c09c17c: 0.293
+    - Vector1_00cc802c9cd7468aa13ffffa9c09c17c: -0.38
     - Vector1_02f8c95cf4fe41c3ae55378f7df12e0e: 0.84
     - Vector1_0d576cc338ea42fa8edb076326a95d7c: 0
-    - Vector1_2fdc9de592da4fbe9cabc0abf9172d20: 12.03
+    - Vector1_2fdc9de592da4fbe9cabc0abf9172d20: 4.25
     - Vector1_6bbd4eff79b84493bddf863844d1357a: 1
-    - Vector1_76e4f73740764b7fab45566b104a1ab7: 0.376
-    - Vector1_8fc960da5923424fb5b82c76b3a73a65: 13.2
+    - Vector1_76e4f73740764b7fab45566b104a1ab7: 0.5
+    - Vector1_8fc960da5923424fb5b82c76b3a73a65: -4.8
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -118,7 +118,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_82f7739c4f9347d9a5f694b4dc6f1208: {r: 0, g: 0.26106068, b: 1, a: 0}
+    - Color_82f7739c4f9347d9a5f694b4dc6f1208: {r: 0, g: 0.26106066, b: 1, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TeleportPlayer : MonoBehaviour
 {
@@ -13,10 +14,25 @@ public class TeleportPlayer : MonoBehaviour
 
     public bool inheritRotation = true;
 
+    private Scene currentScene;
+    private string sceneName;
+
     private void Start()
     {
-        teleportTarget = teleportObject.transform;
-        teleportTarget.GetComponent<MeshRenderer>().enabled = false;    
+
+        //SCENE MANAGEMENT
+        
+        // Create a temporary reference to the current scene.
+        currentScene = SceneManager.GetActiveScene ();
+ 
+        // Retrieve the name of this scene.
+        sceneName = currentScene.name;
+
+        if (sceneName == "TESTING") 
+        {
+            teleportTarget = teleportObject.transform;
+            teleportTarget.GetComponent<MeshRenderer>().enabled = false;  
+        }  
     }
 
 
@@ -52,11 +68,14 @@ public class TeleportPlayer : MonoBehaviour
     }
 
     private void Update() {
-
-        if (!teleportObject.gameObject.activeSelf)
-        {
-            Debug.Log("not active");
-        } 
+    
+        if (sceneName == "TESTING") 
+        {   
+            if (!teleportObject.gameObject.activeSelf)
+            {
+                Debug.Log("not active");
+            } 
+        }
 
     }
 

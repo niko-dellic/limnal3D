@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Mirror;
 
 public class PlayerMovement : NetworkBehaviour //MonoBehaviour
@@ -21,7 +22,7 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
     
     //TANK STUFF
 
-     public GameObject projectilePrefab;
+    public GameObject projectilePrefab;
     public Transform projectileMount;
     private Vector3 rayPosition;
 
@@ -119,10 +120,25 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
     Vector3 velocity;
     bool isGrounded;
 
+    private Scene currentScene;
+    private string sceneName;
+
+    private Vector3 hostLocation;
+
 
 
     void Start()
     {
+
+        //SCENE MANAGEMENT
+        
+        // Create a temporary reference to the current scene.
+        currentScene = SceneManager.GetActiveScene ();
+ 
+        // Retrieve the name of this scene.
+        sceneName = currentScene.name;
+ 
+        
         defaultMaterial = transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material;
 
         if (isLocalPlayer)
@@ -167,7 +183,9 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 
             //PLAYER ORIGIN
             startPosition = this.transform.position;
-            
+
+        if (sceneName == "TESTING") 
+        {
             //MyRoom
             myRoom = GameObject.FindGameObjectWithTag("MYROOM_TELEPORT").transform.position;
             var myRoomObj = GameObject.FindGameObjectWithTag("MYROOM_TELEPORT").GetComponent<MeshRenderer>().enabled = false;    
@@ -186,14 +204,21 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             
             //LOUNGE
             lounge = GameObject.FindGameObjectWithTag("LOUNGE").transform.position;
+        }
             
 
         }
     }
 
-    public void AdjustSpeed(float newSpeed)
+
+    public void AdjustSpeed(float adjustSpeed)
     {
-        mouseSensitivity = newSpeed;       
+
+        var player = GameObject.FindGameObjectWithTag("PLAYER_CLONE");
+        player.GetComponent<PlayerMovement>().mouseSensitivity = adjustSpeed;
+        var playerMove = player.GetComponent<PlayerMovement>().mouseSensitivity;
+        Debug.Log(playerMove);
+        
     }
      
     public void HandleMovement()
@@ -201,7 +226,6 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
         
         if (isLocalPlayer)
         {
-
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
                        
             if(isGrounded && velocity.y < 0)
@@ -353,50 +377,56 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 
             }
 
-            // GO TO MY ROOM
-            if (Input.GetKeyDown("2"))
-            {   
-                teleportID = 2;
-                teleportTimer = Time.time;
-                
-                this.transform.position = teleportZone;
+           
+            //SCENE MANAGEMENT
+            if (sceneName == "TESTING") 
+            {
+          
+                //TELEPORTING IF IN TESTING SCENE
+                // GO TO MY ROOM
+                if (Input.GetKeyDown("2"))
+                {   
+                    teleportID = 2;
+                    teleportTimer = Time.time;
+                    
+                    this.transform.position = teleportZone;
+                }
+
+                // GO TO THE MATRIX
+                if (Input.GetKeyDown("3"))
+                {   
+                    teleportID = 3;
+                    teleportTimer = Time.time;
+                    
+                    this.transform.position = teleportZone;
+                }
+
+                // GO TO THE STATION
+                if (Input.GetKeyDown("4"))
+                {  
+                    teleportID = 4; 
+                    teleportTimer = Time.time;
+
+                    this.transform.position = teleportZone;
+                }
+
+                // GO TO THE STUDY
+                if (Input.GetKeyDown("5"))
+                {   
+                    teleportID = 5;
+                    teleportTimer = Time.time;
+                    
+                    this.transform.position = teleportZone;
+                }
+
+                // GO TO THE Lounge
+                if (Input.GetKeyDown("6"))
+                {   
+                    teleportID = 6;
+                    teleportTimer = Time.time;
+                    this.transform.position = teleportZone;
+                }
             }
-
-            // GO TO THE MATRIX
-            if (Input.GetKeyDown("3"))
-            {   
-                teleportID = 3;
-                teleportTimer = Time.time;
-                
-                this.transform.position = teleportZone;
-            }
-
-            // GO TO THE STATION
-            if (Input.GetKeyDown("4"))
-            {  
-                teleportID = 4; 
-                teleportTimer = Time.time;
-
-                this.transform.position = teleportZone;
-            }
-
-            // GO TO THE STUDY
-            if (Input.GetKeyDown("5"))
-            {   
-                teleportID = 5;
-                teleportTimer = Time.time;
-                
-                this.transform.position = teleportZone;
-            }
-
-            // GO TO THE Lounge
-            if (Input.GetKeyDown("6"))
-            {   
-                teleportID = 6;
-                teleportTimer = Time.time;
-                this.transform.position = teleportZone;
-            }
-
 
 
 
@@ -413,17 +443,49 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             if (host)
             {
                 this.gameObject.tag = "HOST";
-                transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material = hostMaterial;
+                RpcShowHost();
             }      
         }
     }
 
-    // [ClientRpc]
-    // void RpcShowHost()
-    // {
+    [ClientRpc]
+    void RpcShowHost()
+    {
+        GameObject host = GameObject.FindGameObjectWithTag("HOST");
+        transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material = hostMaterial;
+     
+    }
 
-    // }
 
+    [Command(ignoreAuthority = true)]
+    void CmdTourGuide()
+    {
+        if(isLocalPlayer)
+        {
+            hostLocation = this.gameObject.transform.position;
+            // RpccollectGuests();
+                
+        }
+    }
+
+    [ClientRpc]
+    void RpccollectGuests()
+    {
+        Vector3 serverHostLocation = GameObject.FindGameObjectWithTag("HOST").transform.position;
+        Debug.Log(serverHostLocation);
+
+            
+        GameObject[] guests = GameObject.FindGameObjectsWithTag("PLAYER_CLONE");
+        Debug.Log(guests.Length);
+            
+        foreach (GameObject i in guests)
+        {
+            //Debug.Log(hostLocation);
+            i.transform.position = serverHostLocation;
+            // i.transform.position = new Vector3 (0,0,0);
+        }
+
+    } 
 
     //TANK STUFF HERE
         [Command]
@@ -453,6 +515,15 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 
     void Update()
     {
+
+    if (Input.GetKeyDown(KeyCode.M))
+    {
+        CmdTourGuide();
+
+    }
+
+        // Debug.Log(mouseSensitivity + "Update");
+
         HandleMovement();
         
         //TANK STUFF
@@ -508,6 +579,7 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
         }
 
 
+
         //TELEPORTING
         if(teleportID == 1 && teleportTimer + teleportBuffer < Time.time)
         {
@@ -515,34 +587,38 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             this.transform.position = startPosition;
         }
 
-        if(teleportID == 2 && teleportTimer + teleportBuffer < Time.time)
-        {
-            teleportID = 0;
-            this.transform.position = myRoom;
-        }
 
-        if(teleportID == 3 && teleportTimer + teleportBuffer < Time.time)
+        if (sceneName == "TESTING") 
         {
-            teleportID = 0;
-            this.transform.position = matrix;
-        }
+            if(teleportID == 2 && teleportTimer + teleportBuffer < Time.time)
+            {
+                teleportID = 0;
+                this.transform.position = myRoom;
+            }
 
-        if(teleportID == 4 && teleportTimer + teleportBuffer < Time.time)
-        {
-            teleportID = 0;
-            this.transform.position = station;
-        }
+            if(teleportID == 3 && teleportTimer + teleportBuffer < Time.time)
+            {
+                teleportID = 0;
+                this.transform.position = matrix;
+            }
 
-        if(teleportID == 5 && teleportTimer + teleportBuffer < Time.time)
-        {
-            teleportID = 0;
-            this.transform.position = studiolo;
-        }
+            if(teleportID == 4 && teleportTimer + teleportBuffer < Time.time)
+            {
+                teleportID = 0;
+                this.transform.position = station;
+            }
 
-        if(teleportID == 6 && teleportTimer + teleportBuffer < Time.time)
-        {
-            teleportID = 0;
-            this.transform.position = lounge;
+            if(teleportID == 5 && teleportTimer + teleportBuffer < Time.time)
+            {
+                teleportID = 0;
+                this.transform.position = studiolo;
+            }
+
+            if(teleportID == 6 && teleportTimer + teleportBuffer < Time.time)
+            {
+                teleportID = 0;
+                this.transform.position = lounge;
+            }
         }
 
 
