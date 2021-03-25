@@ -56,15 +56,15 @@ public class CustomAudioManager : MonoBehaviour
 
     public void playIntro()
     {
-        if(Input.GetKeyDown(KeyCode.T) && singlePlay == true)
-        {
-            singlePlay = false; //disable the script from playing twice
-            soundTimeDelay = Time.time; //get time at which i press the button
 
-            Play("WOMBOCOMBO");
-            Invoke("PlayLate", longDelay);
-        }
+            if(Input.GetKeyDown(KeyCode.Keypad1) && singlePlay == true)
+            {
+                singlePlay = false; //disable the script from playing twice
+                soundTimeDelay = Time.time; //get time at which i press the button
 
+                Play("WOMBOCOMBO");
+                Invoke("PlayLate", longDelay);
+            }
 
     }
 

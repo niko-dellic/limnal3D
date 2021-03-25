@@ -2,7 +2,11 @@
     "m_SGVersion": 2,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "38629effbb5a449e969464fc82e6e7f6",
-    "m_Properties": [],
+    "m_Properties": [
+        {
+            "m_Id": "ec79c9bb220547a4a281a0970424b9d1"
+        }
+    ],
     "m_Keywords": [],
     "m_Nodes": [
         {
@@ -19,6 +23,9 @@
         },
         {
             "m_Id": "5bb00666fab347129f4193dbb02a0fd4"
+        },
+        {
+            "m_Id": "ca9c9f6fb6a14ec983ddba56e7e72d63"
         }
     ],
     "m_GroupDatas": [],
@@ -36,6 +43,20 @@
                     "m_Id": "2c598b50209740f7a784fb45e658a10b"
                 },
                 "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "ca9c9f6fb6a14ec983ddba56e7e72d63"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "5bb00666fab347129f4193dbb02a0fd4"
+                },
+                "m_SlotId": 3
             }
         }
     ],
@@ -331,6 +352,21 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "6adfb19cc93e4276b352171c418a7086",
+    "m_Id": 0,
+    "m_DisplayName": "CheckerScale",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.ColorRGBMaterialSlot",
     "m_ObjectId": "7b2e79f0828d4813b3e98a48f3abc6b2",
     "m_Id": 1,
@@ -397,6 +433,40 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "ca9c9f6fb6a14ec983ddba56e7e72d63",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -942.0,
+            "y": 12.000001907348633,
+            "width": 147.0,
+            "height": 34.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "6adfb19cc93e4276b352171c418a7086"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "ec79c9bb220547a4a281a0970424b9d1"
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.NormalMaterialSlot",
     "m_ObjectId": "e06b4345b62c47078bffd0b67d11ab75",
     "m_Id": 0,
@@ -438,6 +508,29 @@
         "y": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector1ShaderProperty",
+    "m_ObjectId": "ec79c9bb220547a4a281a0970424b9d1",
+    "m_Guid": {
+        "m_GuidSerialized": "874bf05b-bca5-4fb8-9710-47125965bedc"
+    },
+    "m_Name": "CheckerScale",
+    "m_DefaultReferenceName": "Vector1_ec79c9bb220547a4a281a0970424b9d1",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": 3.0,
+    "m_FloatType": 0,
+    "m_RangeValues": {
+        "x": 0.0,
+        "y": 1.0
+    }
 }
 
 {

@@ -29,13 +29,11 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 
     //TANK STUFF END
 
-
-
     [Header("Host Settings")]
     
     // [SyncVar]
     private bool host;
-    private float hostTime = 0f;
+    private float hostCounter = 0f;
 
     //[SyncVar]
     public Material hostMaterial;
@@ -83,12 +81,9 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
   
     [Header ("Movement Settings")]
     public CharacterController controller;  
-
     public float speed = 12f;
-
     public float gravity;
     private float defaultGravity;
-
     private float defaultSpeed;
 
     [Header("Run Settings")]
@@ -102,14 +97,12 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
     private bool walkMode = false;
     private float walkModeMove;
     private float walkModeJump;
-
     private float walkModeGravity;
-
+    
     [Header("Jump Settings")]
     public float jumpHeight;
     public float superJumpFactor = 10f;
     private float defaultJump;
-
 
     [Header("Grounding")]
 
@@ -119,11 +112,21 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 
     Vector3 velocity;
     bool isGrounded;
-
     private Scene currentScene;
     private string sceneName;
+    private string playerTag = "PLAYER_CLONE";
 
-    private Vector3 hostLocation;
+    private GameObject hostCam;
+
+    public GameObject hostCamHolder;
+
+    [SyncVar]
+    public Vector3 hostCamRot;
+
+    Transform hostMainCamTest;
+
+    // [HideInInspector]
+    // public Vector3 cameraDir;
 
 
 
@@ -137,14 +140,13 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
  
         // Retrieve the name of this scene.
         sceneName = currentScene.name;
- 
-        
         defaultMaterial = transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material;
+
+        hostCam = GameObject.FindGameObjectWithTag("HOSTCAM");
 
         if (isLocalPlayer)
         {
 
-            //GET DEFAULT TEXTURE
             
 
             //SET CAMERA
@@ -152,11 +154,14 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             Camera.main.transform.localPosition = cameraOffset;
             Camera.main.transform.rotation = Quaternion.identity;
 
+            //Set Projectile Mount to Child of Main Cam
+            projectileMount.transform.parent = Camera.main.transform;
+
             //Hide Mouse
             Cursor.lockState = CursorLockMode.Locked;
 
             //Change Tag
-            transform.gameObject.tag = "PLAYER_CLONE";
+            transform.gameObject.tag = playerTag;
 
             //Set Default Jump
             defaultJump = jumpHeight;
@@ -176,16 +181,18 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             walkModeMove = speed*walkFactor;
             walkModeGravity = gravity/walkFactor;
 
-            //TELEPORTING!!
+            
 
-            //TELEPORT ZONE
-            teleportZone = GameObject.FindGameObjectWithTag("TELEPORT_ZONE").transform.position;
+            //TELEPORTING!!
 
             //PLAYER ORIGIN
             startPosition = this.transform.position;
 
         if (sceneName == "TESTING") 
         {
+            //TELEPORT ZONE
+            teleportZone = GameObject.FindGameObjectWithTag("TELEPORT_ZONE").transform.position;
+
             //MyRoom
             myRoom = GameObject.FindGameObjectWithTag("MYROOM_TELEPORT").transform.position;
             var myRoomObj = GameObject.FindGameObjectWithTag("MYROOM_TELEPORT").GetComponent<MeshRenderer>().enabled = false;    
@@ -214,10 +221,10 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
     public void AdjustSpeed(float adjustSpeed)
     {
 
-        var player = GameObject.FindGameObjectWithTag("PLAYER_CLONE");
+        var player = GameObject.FindGameObjectWithTag(playerTag);
         player.GetComponent<PlayerMovement>().mouseSensitivity = adjustSpeed;
         var playerMove = player.GetComponent<PlayerMovement>().mouseSensitivity;
-        Debug.Log(playerMove);
+        //Debug.Log(playerMove);
         
     }
      
@@ -296,9 +303,12 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             //Camera rotation
             xRotation = Mathf.Clamp(xRotation + rotX, minCameraX, maxCameraX);
             Camera.main.transform.localEulerAngles = new Vector3(xRotation,0,0);
+            
+           
+
+            
 
             //ORTHO CAMERA TOGGLE
-
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 onoff = !onoff;
@@ -373,7 +383,7 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
                 teleportID = 1;
                 teleportTimer = Time.time;
 
-                this.transform.position = teleportZone;
+                //this.transform.position = teleportZone;
 
             }
 
@@ -434,49 +444,98 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
     }
 
     //BECOME HOST
-
     [Command]
     void CmdBecomeHost()
     {
-        if (isLocalPlayer)
-        {
-            if (host)
-            {
-                this.gameObject.tag = "HOST";
-                RpcShowHost();
-            }      
-        }
+        RpcShowHost();
+        //Debug.Log(hostCamRot);
     }
 
     [ClientRpc]
     void RpcShowHost()
     {
+        this.gameObject.tag = "HOST";
         GameObject host = GameObject.FindGameObjectWithTag("HOST");
         transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material = hostMaterial;
-     
+        
+        //Set up Host Cam
+        Transform hostMainCamTest = host.transform.Find("HostCamHolder");
+
+        hostCamRot = hostMainCamTest.eulerAngles;        
+        hostCam.transform.SetParent(host.transform);
+        hostCam.transform.localPosition = new Vector3 (0,0,0);
+        hostCam.transform.rotation = host.transform.rotation;
+        
+    }
+
+
+    // [Command (ignoreAuthority = true)]
+    // void CmdTestCamRot(){
+
+    //         if (gameObject.tag == "HOST")
+    //         {
+    //            
+    //             GameObject host = GameObject.FindGameObjectWithTag("HOST");
+    //             hostMainCamTest = host.transform.Find("HostCamHolder");
+                
+    //             float rotX = -Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+    //             xRotation = Mathf.Clamp(xRotation + rotX, minCameraX, maxCameraX);
+                
+    //             hostMainCamTest.transform.localEulerAngles = new Vector3(xRotation,0,0);
+
+    //             RpcRespondCamRot();
+    //         }
+    // }
+
+    // [ClientRpc]
+    // void RpcRespondCamRot(){
+    //     // Debug.Log(hostCamRot);
+    //     //Debug.Log(hostCam.transform.localEulerAngles + "SERVER");
+    //     //Debug.Log(hostMainCamTest.transform.localEulerAngles);
+    //     //hostCam.transform.localEulerAngles = new Vector3(xRotation,0,0);
+    //     // hostCam.transform.eulerAngles = hostCamRot;
+
+    //     // Debug.Log(hostCamRot);
+        
+    // }
+
+
+    [Command]
+    void CmdReleaseHost()
+    {
+        RpcCancelHost();
+    }
+
+    [ClientRpc]
+    void RpcCancelHost()
+    {
+        GameObject host = GameObject.FindGameObjectWithTag("HOST");
+        host.tag = playerTag;
+        transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material = defaultMaterial;
     }
 
 
     [Command(ignoreAuthority = true)]
     void CmdTourGuide()
     {
-        if(isLocalPlayer)
-        {
-            hostLocation = this.gameObject.transform.position;
-            // RpccollectGuests();
+        // if(isLocalPlayer)
+        // {
+            // // hostLocation = this.gameObject.transform.position;
+            RpccollectGuests();
+            // Debug.Log("LOCAL_GUIDE");
                 
-        }
+        // }
     }
 
     [ClientRpc]
     void RpccollectGuests()
     {
         Vector3 serverHostLocation = GameObject.FindGameObjectWithTag("HOST").transform.position;
-        Debug.Log(serverHostLocation);
+        //Debug.Log(serverHostLocation);
 
             
-        GameObject[] guests = GameObject.FindGameObjectsWithTag("PLAYER_CLONE");
-        Debug.Log(guests.Length);
+        GameObject[] guests = GameObject.FindGameObjectsWithTag(playerTag);
+        //Debug.Log(guests.Length + "GUESTS");
             
         foreach (GameObject i in guests)
         {
@@ -494,38 +553,44 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             GameObject projectile = Instantiate(projectilePrefab, projectileMount.position, transform.rotation); 
             // GameObject projectile = Instantiate(projectilePrefab, rayPosition, transform.rotation);
             NetworkServer.Spawn(projectile);
-            // RpcOnFire();
+            // cameraDir = Camera.main.transform.forward;
+            // SyncCam();
+            
+            
         }
 
-        
-        // this is called on the server
-
-        // this is called on the tank that fired for all observers
-        [ClientRpc]
-        void RpcOnFire()
-        {
-            GameObject projectile = Instantiate(projectilePrefab, projectileMount.position, transform.rotation);
-            // GameObject projectile = Instantiate(projectilePrefab, rayPosition, transform.rotation); 
-            NetworkServer.Spawn(projectile);
-        }
-
-
+        // [ClientRpc]
+        // void SyncCam()
+        // {      
+        //     Debug.Log(cameraDir + "serverRead");
+        // }
     //TANK END
 
+    // [Command (ignoreAuthority = true)]
+    // void CmdSyncHostCam()
+    // {
+    //     hostCam.transform.localEulerAngles = new Vector3(xRotation,0,0);
+    //     RpcSyncHostCam();
+    // }
+
+    // [ClientRpc]
+    // void RpcSyncHostCam()
+    // {
+    //     hostCam.transform.localEulerAngles = new Vector3(xRotation,0,0);
+    // }
 
     void Update()
     {
-
-    if (Input.GetKeyDown(KeyCode.M))
-    {
-        CmdTourGuide();
-
-    }
-
-        // Debug.Log(mouseSensitivity + "Update");
-
         HandleMovement();
+
+        // CmdTestCamRot();
         
+
+        // if (this.gameObject.tag == "HOST")
+        // {
+        //     CmdSyncHostCam();
+        // }
+
         //TANK STUFF
 
         if (!isLocalPlayer) return;
@@ -557,27 +622,37 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
         // BECOME HOST
         if (Input.GetKeyDown(KeyCode.H))
         {
-            hostTime = 1 + hostTime;
+            hostCounter = 1 + hostCounter;
         }
 
-        if (hostTime > 5f)
+        if (hostCounter > 5f)
         {
             host = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            host = false;
-            hostTime = 0;
-            transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material  = defaultMaterial;
-            this.gameObject.tag = "PLAYER_CLONE";
-        }
-        
         if (host)
         {
-            CmdBecomeHost();
-        }
+            
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                CmdBecomeHost();
+            }
 
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                host = false;
+                hostCounter = 0;
+                // transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material = defaultMaterial;
+                // this.gameObject.tag = playerTag;
+
+                CmdReleaseHost();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Backspace))
+            {
+                CmdTourGuide();
+            }
+        }
 
 
         //TELEPORTING

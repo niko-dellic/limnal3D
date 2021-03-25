@@ -10,7 +10,7 @@ public class screenSaverMaster : MonoBehaviour
     [Header("AFK Cameras")]
     public List<Camera> AFKCameras;
     private float cameraSwitch;
-    private Camera mainCam;
+    public Camera mainCam;
     private float nextActionTime = 0f;
     public float AFKCameraSwapTimer = 3f;
     private int cameraIndex = 0;
@@ -24,11 +24,17 @@ public class screenSaverMaster : MonoBehaviour
     float lastIdleTime;
     private bool AFK = false;
 
+    
+    void Start() {
+        // mainCam = Camera.main;
+
+    }
+    
     void Awake()
     {
         lastIdleTime = Time.time;    
 
-        mainCam = Camera.main;
+        // mainCam = Camera.main;
 
         // Cameras Start
         foreach (Camera i in AFKCameras)
@@ -71,7 +77,8 @@ public class screenSaverMaster : MonoBehaviour
         if (AFK)
         {
             //Disable Main Cameras
-            // mainCam.enabled = false;
+            //mainCam.enabled = false;
+           
             cameraSwitch = Time.time;
 
             //SWITCH TO AFK CAMERAS
@@ -124,6 +131,7 @@ public class screenSaverMaster : MonoBehaviour
         {
             lastIdleTime = Time.time;
             mainCam.enabled = true;
+            //Debug.Log(mainCam.transform.position + "Camera POS");
 
             foreach (Camera i in AFKCameras)
             {

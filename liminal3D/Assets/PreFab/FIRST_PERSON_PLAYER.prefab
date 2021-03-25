@@ -284,6 +284,36 @@ Transform:
   m_Father: {fileID: 5883091876794213538}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4867977647311432402
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7901015838546150189}
+  m_Layer: 0
+  m_Name: HostCamHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7901015838546150189
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4867977647311432402}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.9, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5883091876794213538}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5883091875509713958
 GameObject:
   m_ObjectHideFlags: 0
@@ -331,7 +361,7 @@ GameObject:
   - component: {fileID: 5033862192102174351}
   m_Layer: 0
   m_Name: FIRST_PERSON_PLAYER
-  m_TagString: PLAYER
+  m_TagString: PLAYER_CLONE
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -352,6 +382,7 @@ Transform:
   - {fileID: 582269737422626979}
   - {fileID: 75497869294466756}
   - {fileID: 5078310011843881308}
+  - {fileID: 7901015838546150189}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -387,14 +418,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  pointerReticle: {fileID: 0}
-  IgnoreMe:
-    serializedVersion: 2
-    m_Bits: 128
   remapFactor: 3
   smallScale: 0.1
   largeScale: 5
-  shootKey: 32
   projectilePrefab: {fileID: 998944380893270910, guid: b473bf0354c74d34781dfa88ba452056, type: 3}
   projectileMount: {fileID: 5078310011843881308}
   hostMaterial: {fileID: 2100000, guid: 0f5730f9d2400994ca3d02a83ab3ffe1, type: 2}
@@ -424,6 +450,8 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 8
+  hostCamHolder: {fileID: 4867977647311432402}
+  hostCamRot: {x: 0, y: 0, z: 0}
 --- !u!114 &5883091876794213536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,7 +495,7 @@ AudioSource:
   m_GameObject: {fileID: 5883091876794213548}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 86fa3c4c6dcdb7847ae7a7f812f0378b, type: 2}
   m_audioClip: {fileID: 8300000, guid: c04c7e627ebe1db47a4bf01bd8418e21, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1

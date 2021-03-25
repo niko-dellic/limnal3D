@@ -19,8 +19,6 @@ public class changePostProandRes : MonoBehaviour
     [Header("low res mode")]
     public GameObject pixelizedUI;
 
-
-
     private RenderTexture cameraTexture;
 
     private int defaultCamWidth;
@@ -92,7 +90,7 @@ public class changePostProandRes : MonoBehaviour
             vg.intensity.value = 0.315f;
 
             //Enable sun
-            RenderSettings.sun.enabled = false;
+            //RenderSettings.sun.enabled = false;
         }
 
 

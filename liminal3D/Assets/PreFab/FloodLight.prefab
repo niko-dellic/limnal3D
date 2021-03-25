@@ -45,9 +45,9 @@ Light:
   serializedVersion: 10
   m_Type: 0
   m_Shape: 0
-  m_Color: {r: 1, g: 0.5518868, b: 0.6721124, a: 1}
+  m_Color: {r: 0.45882353, g: 0.69803923, b: 1, a: 1}
   m_Intensity: 250
-  m_Range: 98.42266
+  m_Range: 100
   m_SpotAngle: 41.598835
   m_InnerSpotAngle: 16.894585
   m_CookieSize: 10
@@ -128,8 +128,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationSpeed: 3
-  boogy: 0.00000017484555
-  randomStartRotation: {x: 0, y: 0, z: 0}
+  limitRot: 0
+  maxRot: 80
+  delta: 1.5
 --- !u!1001 &712818494604723485
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -20,6 +20,11 @@ TagManager:
   - MYROOM_TELEPORT
   - TELEPORT_ZONE
   - MEDIA_PANES
+  - HOSTCAM
+  - AR
+  - RealOnly
+  - TEST
+  - HYBRID
   layers:
   - Default
   - TransparentFX
