@@ -53,13 +53,13 @@ MonoBehaviour:
     min: -100
     max: 100
   colorFilter:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: {r: 1, g: 1, b: 1, a: 1}
     hdr: 1
     showAlpha: 0
     showEyeDropper: 1
   hueShift:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
     min: -180
     max: 180
@@ -68,6 +68,43 @@ MonoBehaviour:
     m_Value: 0
     min: -100
     max: 100
+--- !u!114 &-6028235769155053152
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5e1dc532bcb41949b58bc4f2abfbb7e, type: 3}
+  m_Name: LensDistortion
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0
+    min: -1
+    max: 1
+  xMultiplier:
+    m_OverrideState: 0
+    m_Value: 1
+    min: 0
+    max: 1
+  yMultiplier:
+    m_OverrideState: 0
+    m_Value: 1
+    min: 0
+    max: 1
+  center:
+    m_OverrideState: 0
+    m_Value: {x: 0.5, y: 0.5}
+  scale:
+    m_OverrideState: 0
+    m_Value: 1
+    min: 0.01
+    max: 5
 --- !u!114 &-4583740441093707714
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -182,15 +219,15 @@ MonoBehaviour:
   m_AdvancedMode: 0
   threshold:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.05
     min: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 4
+    m_Value: 6.35
     min: 0
   scatter:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.533
     min: 0
     max: 1
   clamp:
@@ -239,6 +276,32 @@ MonoBehaviour:
   - {fileID: -4531273871521487750}
   - {fileID: 6952704876972625209}
   - {fileID: -6415549017125149554}
+  - {fileID: -6028235769155053152}
+  - {fileID: 8980579866165818707}
+  - {fileID: 4212497198913851880}
+--- !u!114 &4212497198913851880
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35a1bd58dd7548198609eabd8ae2bb7d, type: 3}
+  m_Name: Pixelation
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  widthPixelation:
+    m_OverrideState: 1
+    m_Value: 512
+  heightPixelation:
+    m_OverrideState: 1
+    m_Value: 256
+  colorPrecision:
+    m_OverrideState: 1
+    m_Value: 16
 --- !u!114 &6952704876972625209
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -268,7 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81180773991d8724ab7f2d216912b564, type: 3}
   m_Name: ChromaticAberration
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   m_AdvancedMode: 0
   intensity:
     m_OverrideState: 1
@@ -305,3 +368,29 @@ MonoBehaviour:
     m_Value: 0.05
     min: 0
     max: 0.2
+--- !u!114 &8980579866165818707
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ea62842ddb6960488930897ba9ce398, type: 3}
+  m_Name: Dithering
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  patternIndex:
+    m_OverrideState: 1
+    m_Value: 2
+  ditherThreshold:
+    m_OverrideState: 1
+    m_Value: 2
+  ditherStrength:
+    m_OverrideState: 1
+    m_Value: 10
+  ditherScale:
+    m_OverrideState: 1
+    m_Value: 2

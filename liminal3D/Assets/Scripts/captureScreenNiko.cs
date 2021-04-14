@@ -7,7 +7,7 @@ using TMPro;
 public class captureScreenNiko : MonoBehaviour
 {
 
-    
+    public GameObject multiplayerMenu;
     private int count = 0;
 
     private float timer = 0.0f;
@@ -47,7 +47,7 @@ public class captureScreenNiko : MonoBehaviour
         //Debug.Log(timer);
         timer += Time.deltaTime;
 
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P) && multiplayerMenu.activeSelf == false)
         {
 
             var dateTime = System.DateTime.Now;
@@ -68,7 +68,7 @@ public class captureScreenNiko : MonoBehaviour
 
         }
 
-        if (Input.GetKeyUp(KeyCode.P))
+        if (Input.GetKeyUp(KeyCode.P) && multiplayerMenu.activeSelf == false)
         {
             screenCaptureNotification.SetActive(true);
             timer = 0;

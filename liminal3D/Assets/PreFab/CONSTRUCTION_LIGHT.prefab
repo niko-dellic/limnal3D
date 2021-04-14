@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7992324731586732265}
   m_Layer: 0
   m_Name: Light_Bulbs_low.004
-  m_TagString: Untagged
+  m_TagString: RealOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -26561111719858388, guid: 92b03f1dabe8fd342ad3987af755249f, type: 3}
+  - {fileID: 2100000, guid: a3f0192b470f3d443ba62fef0583bfc1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 7212636584781946844}
   m_Layer: 0
   m_Name: Legs_Low.004
-  m_TagString: Untagged
+  m_TagString: RealOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 2037193902266104026}
   m_Layer: 0
   m_Name: Light_Heads_Low.004
-  m_TagString: Untagged
+  m_TagString: RealOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -255,7 +255,7 @@ GameObject:
   - component: {fileID: 5176242552999718300}
   m_Layer: 0
   m_Name: Area
-  m_TagString: Untagged
+  m_TagString: RealOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -347,7 +347,7 @@ GameObject:
   - component: {fileID: 8778562874843654371}
   m_Layer: 0
   m_Name: CONSTRUCTION_LIGHT
-  m_TagString: Untagged
+  m_TagString: RealOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

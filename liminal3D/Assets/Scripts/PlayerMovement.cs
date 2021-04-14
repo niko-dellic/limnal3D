@@ -7,6 +7,16 @@ using Mirror;
 
 public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 {
+
+    //PLAYER NAME
+    public TextMesh playerNameText;
+    public GameObject floatingInfo;
+
+    public string textName;
+
+    [SyncVar(hook = nameof(OnNameChanged))]
+    public string playerName;
+   
     
     //RAYCASTING
     [Header("PROJECTILE (RAYCAST AND GUMBALL PREFAB)")]
@@ -58,8 +68,8 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
     [Header ("Viewport")]
     [SerializeField] Vector3 cameraOffset;
     [SerializeField] public float mouseSensitivity = 50f;
-    [SerializeField] float maxCameraX = 65f;
-    [SerializeField] float minCameraX = -65f;
+    [SerializeField] float maxCameraX = 75f;
+    [SerializeField] float minCameraX = -75f;
     float xRotation = 0f;
     private bool onoff = false;
 
@@ -118,17 +128,47 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
 
     private GameObject hostCam;
 
-    public GameObject hostCamHolder;
-
     [SyncVar]
     public Vector3 hostCamRot;
 
-    Transform hostMainCamTest;
+    //Name Server Stuff
+    void OnNameChanged(string _Old, string _New)
+    {
+        playerNameText.text = playerName;
+    }
 
-    // [HideInInspector]
-    // public Vector3 cameraDir;
+    public void inputName(string boxName)
+    {
+        textName = boxName;
+
+    }
+
+    public override void OnStartLocalPlayer()
+    {           
+        string name = textName;
+        CmdSetupPlayer(name);
 
 
+        if (isLocalPlayer)
+        {
+             //make local players run this
+             floatingInfo.transform.rotation = Quaternion.Euler(0,180,0);
+             return;
+        }
+
+    }
+
+  
+    [Command]
+    public void CmdSetupPlayer(string _name)
+    {
+        // player info sent to server, then server updates sync vars which handles it on all clients
+        playerName = _name;
+        //playerColor = _col;
+    }
+
+
+    //name stuff end
 
     void Start()
     {
@@ -142,13 +182,10 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
         sceneName = currentScene.name;
         defaultMaterial = transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material;
 
-        hostCam = GameObject.FindGameObjectWithTag("HOSTCAM");
+        //hostCam = GameObject.FindGameObjectWithTag("HOSTCAM");
 
         if (isLocalPlayer)
         {
-
-            
-
             //SET CAMERA
             Camera.main.transform.SetParent(transform);
             Camera.main.transform.localPosition = cameraOffset;
@@ -304,9 +341,6 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             xRotation = Mathf.Clamp(xRotation + rotX, minCameraX, maxCameraX);
             Camera.main.transform.localEulerAngles = new Vector3(xRotation,0,0);
             
-           
-
-            
 
             //ORTHO CAMERA TOGGLE
             if (Input.GetKeyDown(KeyCode.Tab))
@@ -448,7 +482,6 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
     void CmdBecomeHost()
     {
         RpcShowHost();
-        //Debug.Log(hostCamRot);
     }
 
     [ClientRpc]
@@ -459,46 +492,13 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
         transform.Find("MAIN CHARACTER").GetComponent<Renderer>().material = hostMaterial;
         
         //Set up Host Cam
-        Transform hostMainCamTest = host.transform.Find("HostCamHolder");
-
-        hostCamRot = hostMainCamTest.eulerAngles;        
-        hostCam.transform.SetParent(host.transform);
-        hostCam.transform.localPosition = new Vector3 (0,0,0);
-        hostCam.transform.rotation = host.transform.rotation;
+        // Transform hostMainCamTest = host.transform.Find("HostCamHolder");
+        // hostCamRot = hostMainCamTest.eulerAngles;        
+        // hostCam.transform.SetParent(host.transform);
+        // hostCam.transform.localPosition = new Vector3 (0,0,0);
+        // hostCam.transform.rotation = host.transform.rotation;
         
     }
-
-
-    // [Command (ignoreAuthority = true)]
-    // void CmdTestCamRot(){
-
-    //         if (gameObject.tag == "HOST")
-    //         {
-    //            
-    //             GameObject host = GameObject.FindGameObjectWithTag("HOST");
-    //             hostMainCamTest = host.transform.Find("HostCamHolder");
-                
-    //             float rotX = -Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-    //             xRotation = Mathf.Clamp(xRotation + rotX, minCameraX, maxCameraX);
-                
-    //             hostMainCamTest.transform.localEulerAngles = new Vector3(xRotation,0,0);
-
-    //             RpcRespondCamRot();
-    //         }
-    // }
-
-    // [ClientRpc]
-    // void RpcRespondCamRot(){
-    //     // Debug.Log(hostCamRot);
-    //     //Debug.Log(hostCam.transform.localEulerAngles + "SERVER");
-    //     //Debug.Log(hostMainCamTest.transform.localEulerAngles);
-    //     //hostCam.transform.localEulerAngles = new Vector3(xRotation,0,0);
-    //     // hostCam.transform.eulerAngles = hostCamRot;
-
-    //     // Debug.Log(hostCamRot);
-        
-    // }
-
 
     [Command]
     void CmdReleaseHost()
@@ -559,38 +559,20 @@ public class PlayerMovement : NetworkBehaviour //MonoBehaviour
             
         }
 
-        // [ClientRpc]
-        // void SyncCam()
-        // {      
-        //     Debug.Log(cameraDir + "serverRead");
-        // }
     //TANK END
-
-    // [Command (ignoreAuthority = true)]
-    // void CmdSyncHostCam()
-    // {
-    //     hostCam.transform.localEulerAngles = new Vector3(xRotation,0,0);
-    //     RpcSyncHostCam();
-    // }
-
-    // [ClientRpc]
-    // void RpcSyncHostCam()
-    // {
-    //     hostCam.transform.localEulerAngles = new Vector3(xRotation,0,0);
-    // }
 
     void Update()
     {
         HandleMovement();
 
-        // CmdTestCamRot();
-        
 
-        // if (this.gameObject.tag == "HOST")
-        // {
-        //     CmdSyncHostCam();
-        // }
-
+        //NAME STUFF ON UPDATE
+        if (!isLocalPlayer)
+        {
+                // make non-local players run this
+                floatingInfo.transform.LookAt(Camera.main.transform);
+                return;
+        }
         //TANK STUFF
 
         if (!isLocalPlayer) return;

@@ -71,13 +71,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1572518012302888928}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
   m_Children: []
   m_Father: {fileID: 582269737422626979}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!23 &1769640408394875629
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -140,7 +140,7 @@ TextMesh:
   m_Font: {fileID: 12800000, guid: 761cd56ec44ea7b42bd6e835cc0f6dae, type: 3}
   m_Color:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4279164903
 --- !u!1 &2425467486958549875
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,12 +263,12 @@ GameObject:
   m_Component:
   - component: {fileID: 582269737422626979}
   m_Layer: 0
-  m_Name: floatinInfo
+  m_Name: FloatingInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &582269737422626979
 Transform:
   m_ObjectHideFlags: 0
@@ -400,7 +400,7 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 1
+  m_StepOffset: 0.5
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
@@ -418,6 +418,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  playerNameText: {fileID: 7564527841084757744}
+  floatingInfo: {fileID: 4812510708411758382}
+  textName: player
+  playerName: Niko
   remapFactor: 3
   smallScale: 0.1
   largeScale: 5
@@ -427,8 +431,8 @@ MonoBehaviour:
   teleportBuffer: 0.1
   cameraOffset: {x: 0, y: 0.9, z: 0}
   mouseSensitivity: 50
-  maxCameraX: 65
-  minCameraX: -65
+  maxCameraX: 75
+  minCameraX: -75
   minFov: 15
   maxFov: 90
   perspectiveSensitivity: 40
@@ -450,7 +454,6 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 8
-  hostCamHolder: {fileID: 4867977647311432402}
   hostCamRot: {x: 0, y: 0, z: 0}
 --- !u!114 &5883091876794213536
 MonoBehaviour:
