@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 
 public class InheritVelocity : MonoBehaviour
@@ -16,6 +17,8 @@ public class InheritVelocity : MonoBehaviour
         if(other.tag ==  "PLAYER_CLONE" || other.tag == "HOST")
         {
             other.transform.parent = transform;
+
+            other.GetComponent<AudioSource>().mute = true;
         }
     }
 
@@ -27,6 +30,7 @@ public class InheritVelocity : MonoBehaviour
         if(other.tag ==  "PLAYER_CLONE" || other.tag == "HOST")
         {
             other.transform.parent = null;
+            other.GetComponent<AudioSource>().mute = false;
         }   
 
     }

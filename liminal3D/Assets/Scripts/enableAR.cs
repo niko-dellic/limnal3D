@@ -9,6 +9,20 @@ using Mirror;
 
 public class enableAR : NetworkBehaviour
 {
+    
+    [HideInInspector]
+    public GameObject[] ditherArrayAR;
+    public GameObject overrideZones;
+    public bool exitOvveride = false;
+    public Volume volume1;
+    public Volume volume2;
+
+    [Header("MINIMAP OVERLAY CAMERAS")]
+    public GameObject miniMapCam;
+    public GameObject miniMapPostProPlane;
+    public GameObject miniMapSectionCam;
+    public GameObject miniMapSectionPostProPlane;
+
 
     [Header("Pixel UI")]
     public GameObject pixelCam;
@@ -34,14 +48,21 @@ public class enableAR : NetworkBehaviour
     public Material realWorldMat;
     public Material defaultMat;
 
+    private List<GameObject> RealSound = new List<GameObject>();
+    private List<GameObject> ARSound = new List<GameObject>();
     private List<GameObject> ARObjects = new List<GameObject>();
     private List<GameObject> hybridObjects = new List<GameObject>();
     private List<GameObject> realOnlyObjects = new List<GameObject>();
     private List<GameObject> realOnlyLights = new List<GameObject>();
 
-    private bool ARToggle = false;
-    private bool lerp = false;
-    private float Counter;
+    [HideInInspector]
+    public bool ARToggle = false;
+    
+    [HideInInspector]
+    public bool lerp = false;
+    
+    [HideInInspector]
+    public float Counter;
     private float interp = 0f; 
     private float negInterp = 0f;
 
@@ -49,7 +70,10 @@ public class enableAR : NetworkBehaviour
 
     public Volume volume;
     private ChromaticAberration ChromaticAberration;
+    private ChromaticAberration ChromaticAberration2;
     private LensDistortion LensDistortion;
+    private LensDistortion LensDistortion2;
+    
     private float defaultLensDistortion;
 
     [Range(1.0f,2.0f)]
@@ -75,12 +99,58 @@ public class enableAR : NetworkBehaviour
     public Color AmbientColor;
     private Color defaultAmbientColor;
 
-    private float timeTrigger;
+    [HideInInspector]
+    public float timeTrigger;
+
+    private bool skyCounter;
+
+    private float fogDensityStart;
+
+    private float fogDensityTarget;
+
+    //sky colors
+    float startFogR;
+    float startFogG;
+    float startFogB;
+    float startAmbientR;
+    float startAmbientG;
+    float startAmbientB;
 
 
     // Start is called before the first frame update
+    private void OnApplicationQuit() {
+
+        defaultMat.SetFloat("_Opacity", 1);
+        realWorldMat.SetFloat("_Opacity", 1);
+
+
+    }
+
+    //disable dither Zones on AR Toggle
+    public void ditherxRef(bool ditherSwitch)
+    {
+        for (int i = 0; i < ditherArrayAR.Length; i++)
+        {
+            ditherArrayAR[i].SetActive(ditherSwitch);    
+        }
+
+        // if (ditherSwitch == false)
+        // {
+        //     videoMode = true;
+        // }
+
+        // if (ditherSwitch == true)
+        // {
+        //     videoMode = false;
+        // }
+    }
+
+    
     void Start()
     {
+        //DITHER ZONES
+        ditherArrayAR = GameObject.FindGameObjectsWithTag("DITHERZONE");
+
         //UI
         arUIRawImg = arUI.GetComponent<RawImage>();
         xyzGUIRawImg = xyzGUI.GetComponent<RawImage>(); 
@@ -94,11 +164,22 @@ public class enableAR : NetworkBehaviour
         defaultAmbientColor = RenderSettings.ambientLight;
         defaultFogDistance = RenderSettings.fogDensity;
 
-        //postPro
-        var postProEffects = volume.GetComponent<Volume>();
+        //postPro - there are two volumes because i couldnt find the dither override so i just copied everything else and enable and disable the entire thing
+
+        //var postProEffects = volume.GetComponent<Volume>();
+        
+        var postProEffects = volume1;
+        var postProEffects2 = volume2;
+
+        //volume 1
         postProEffects.profile.TryGet(out ChromaticAberration);
         postProEffects.profile.TryGet(out LensDistortion);
-        
+
+        //volume 2
+        postProEffects2.profile.TryGet(out ChromaticAberration2);
+        postProEffects2.profile.TryGet(out LensDistortion2);
+
+
         defaultLensDistortion = LensDistortion.intensity.value;
         ChromaticAberration.intensity.value = 0f;
 
@@ -113,7 +194,13 @@ public class enableAR : NetworkBehaviour
             if (arArray[i].GetComponent<MeshRenderer>() != null)
             {
                 ARObjects.Add(arArray[i]);
-            }    
+            }
+
+            if (arArray[i].GetComponent<AudioSource>() != null) 
+            {
+                ARSound.Add(arArray[i]);
+            }
+
         }
 
         //Get hybrid Objects
@@ -135,7 +222,12 @@ public class enableAR : NetworkBehaviour
             if (realOnlyArray[i].GetComponent<MeshRenderer>() != null)
             {
                 realOnlyObjects.Add(realOnlyArray[i]);
-            }    
+            } 
+
+            if (realOnlyArray[i].GetComponent<AudioSource>() != null) 
+            {
+                RealSound.Add(realOnlyArray[i]);
+            }
         }
 
         //Get RealOnly Lights
@@ -196,6 +288,7 @@ public class enableAR : NetworkBehaviour
             
         }
 
+        volume2.enabled = false;
         ARToggle = true;
         lerp = true;
  
@@ -204,21 +297,101 @@ public class enableAR : NetworkBehaviour
     void Update()
     {
 
+        if (exitOvveride == true)
+        {
+            lerp = true;
+        }
+
         if (Input.GetKeyDown(KeyCode.E) && multiplayerMenu.activeSelf == false)
         {
             lerp = true;
             ARToggle = !ARToggle;
-            timeTrigger = Time.time + ArUISpeed;
-            
+            timeTrigger = Time.time + ArUISpeed;     
         }
 
         if (ARToggle && Input.GetKeyUp(KeyCode.E) && multiplayerMenu.activeSelf == false)
         {
             PowerUP.Play();
+            volume2.enabled = false;
+            volume1.enabled = true;
+        }
+
+
+        void changeEnvironment (Color resultAmbientColor, Color resultFogColor, float FogThickness, Material alternateSky)
+        {
+            
+            if(altSky != null)
+            {
+                RenderSettings.skybox = alternateSky;  
+            }
+
+            if (skyCounter == false)
+            {
+                fogDensityStart = RenderSettings.fogDensity;
+                        
+                //Start Fog Color
+                startFogR = RenderSettings.fogColor.r;
+                startFogG = RenderSettings.fogColor.g;
+                startFogB = RenderSettings.fogColor.b;
+
+                //Start Ambient Color
+                startAmbientR = RenderSettings.ambientLight.r;
+                startAmbientG = RenderSettings.ambientLight.g;
+                startAmbientB = RenderSettings.ambientLight.b;
+
+                skyCounter = true;
+
+            }
+
+            //LERP FOG COLOR
+            //GET Target FOG COLOR
+            float targetFogR = resultFogColor.r;
+            float targetFogG = resultFogColor.g;
+            float targetFogB = resultFogColor.b;
+
+            //CREATE NEW COLOR
+            Color destinationFog = new Color (Mathf.Lerp(startFogR,targetFogR,Counter),Mathf.Lerp(startFogG,targetFogG,Counter),Mathf.Lerp(startFogB,targetFogB,Counter));
+                    
+            //APPLY NEW COLOR
+            RenderSettings.fogColor = destinationFog;
+
+            //LERP AMBIENT COLOR
+            float targetAmbientR = resultAmbientColor.r;
+            float targetAmbientG = resultAmbientColor.g;
+            float targetAmbientB = resultAmbientColor.b;
+
+            //CREATE NEW COLOR FOR AMBIENT LIGHT
+            Color desinationAmbient = new Color (Mathf.Lerp(startAmbientR,targetAmbientR, Counter),Mathf.Lerp(startAmbientG,targetAmbientG, Counter),Mathf.Lerp(startAmbientB,targetAmbientB, Counter));
+            //Color desintation
+            RenderSettings.ambientLight = desinationAmbient;
+                    
+            //Change Fog Density
+            RenderSettings.fogDensity = Mathf.Lerp(fogDensityStart, FogThickness, Counter);
         }
 
         if(ARToggle)
         {
+            for (int i = 0; i < ditherArrayAR.Length; i++)
+            {
+                if (ditherArrayAR[i].activeSelf == false)
+                {
+                    ditherArrayAR[i].SetActive(true);
+                }
+            }
+
+            if (miniMapCam.activeSelf == false)
+            {
+                miniMapCam.SetActive(true);
+                miniMapPostProPlane.SetActive(true);
+
+            }
+
+            if (miniMapSectionCam.activeSelf == false)
+            {
+                miniMapSectionCam.SetActive(true);
+                miniMapSectionPostProPlane.SetActive(true);
+            }
+
             if (Camera.main != null && Camera.main.GetComponent<Camera>().targetTexture == null)
             {
                 Camera.main.GetComponent<Camera>().targetTexture = pixelRT;
@@ -226,6 +399,7 @@ public class enableAR : NetworkBehaviour
 
             if (lerp == true)
             {   
+                
                 //enable pixel cam
                 pixelCam.SetActive(true);
                  
@@ -245,14 +419,10 @@ public class enableAR : NetworkBehaviour
                 negInterp = Mathf.Lerp(1f,0f,Counter);
 
                 //Change Sky
-                if(altSky != null)
+                if (overrideZones.GetComponent<switchSky>().inZone == false)
                 {
-                    RenderSettings.skybox = altSky;  
+                    changeEnvironment(AmbientColor, FogColor, fogDistance, altSky);
                 }
-                
-                RenderSettings.fogColor = FogColor;
-                RenderSettings.ambientLight = AmbientColor;
-                RenderSettings.fogDensity = fogDistance;
 
                 //postPro
                 superSin = Mathf.Sin(Counter*Mathf.PI); //set undulation value
@@ -267,7 +437,9 @@ public class enableAR : NetworkBehaviour
                 if (Counter > 1)
                 {
                     lerp = false;
-                    Counter = 0;  
+                    Counter = 0;
+                    skyCounter = false;
+                    exitOvveride = false;
                     LensDistortion.intensity.value = defaultLensDistortion;
 
                     for (int i = 0; i < realOnlyObjects.Count; i++)
@@ -297,6 +469,18 @@ public class enableAR : NetworkBehaviour
                     {
                     startHybridMat[i].SetFloat("_Opacity", interp);
                     }
+                }
+
+                //Enable AR Audio
+                for (int i = 0; i < ARSound.Count; i++)
+                {
+                    ARSound[i].GetComponent<AudioSource>().enabled = true;
+                }
+
+                //DISABLE Real Audio
+                for (int i = 0; i < RealSound.Count; i++)
+                {
+                    RealSound[i].GetComponent<AudioSource>().enabled = false;
                 }
 
 
@@ -353,6 +537,13 @@ public class enableAR : NetworkBehaviour
 
         if(!ARToggle)
         {
+            for (int i = 0; i < ditherArrayAR.Length; i++)
+            {
+                if (ditherArrayAR[i].activeSelf == true)
+                {
+                    ditherArrayAR[i].SetActive(false);
+                }
+            }
 
             if (Camera.main != null && Camera.main.GetComponent<Camera>().targetTexture != null)
             {
@@ -364,6 +555,7 @@ public class enableAR : NetworkBehaviour
 
             if (lerp == true)
             {   
+                
 
                 //disable ui
                 arUIRawImg.CrossFadeAlpha(0,ArUISpeed,false);
@@ -376,11 +568,29 @@ public class enableAR : NetworkBehaviour
                     xyz3D.SetActive(false);
                 }
 
-                //Reset Sky
-                RenderSettings.skybox = regularSky;    
-                RenderSettings.fogColor = defaultFogColor;    
-                RenderSettings.ambientLight = defaultAmbientColor;
-                RenderSettings.fogDensity = defaultFogDistance;
+                
+
+                //Reset Sky Normally
+                if (overrideZones.GetComponent<switchSky>().inZone == false)
+                {
+                    changeEnvironment(defaultAmbientColor, defaultFogColor, defaultFogDistance, regularSky);
+                }
+
+                // Reset Sky if in an Overide Zone
+                if (overrideZones.GetComponent<switchSky>().inZone == true)
+                {
+                    Color overrideAmbient = overrideZones.GetComponent<switchSky>().AmbientColor;
+                    Color overrideFog = overrideZones.GetComponent<switchSky>().FogColor;
+                    float overideFogDistance = overrideZones.GetComponent<switchSky>().fogDistance; 
+                    Material overideSky = RenderSettings.skybox;
+
+                    if (overrideZones.GetComponent<switchSky>().altSky != null)
+                    {
+                        overideSky =  overrideZones.GetComponent<switchSky>().altSky;
+                    }
+
+                    changeEnvironment(overrideAmbient, overrideFog, overideFogDistance, overideSky);
+                }
 
                 //fireworks
                 //fireworks.SetActive(false);
@@ -397,11 +607,11 @@ public class enableAR : NetworkBehaviour
             
                 //postPro
                 superSin = Mathf.Sin(Counter*Mathf.PI); //set undulation value
-                LensDistortion.intensity.value = -superSin/distortionIntensity;
+                LensDistortion2.intensity.value = -superSin/distortionIntensity; //post pro 2 added here
 
                 if (Counter > 0.15)
                 {
-                    ChromaticAberration.intensity.value = superSin;
+                    ChromaticAberration2.intensity.value = superSin; //post pro 2 added here
                 }
 
                 for (int i = 0; i < startARMat.Count; i++)
@@ -436,8 +646,28 @@ public class enableAR : NetworkBehaviour
                 {
                     lerp = false;
                     Counter = 0;
+                    skyCounter = false;
+                    exitOvveride = false;
                     LensDistortion.intensity.value = defaultLensDistortion;
+
+                    //Disable MiniMAP UI
+                    miniMapCam.SetActive(false);
+                    miniMapPostProPlane.SetActive(false);
+
+                    miniMapSectionCam.SetActive(false);
+                    miniMapSectionPostProPlane.SetActive(false);
+
+                    //Disable AR Audio
+                    for (int i = 0; i < ARSound.Count; i++)
+                    {
+                        ARSound[i].GetComponent<AudioSource>().enabled = false;
+                    }
                     
+                    //Enable Real Audio
+                    for (int i = 0; i < RealSound.Count; i++)
+                    {
+                        RealSound[i].GetComponent<AudioSource>().enabled = false;
+                    }
                     
                 
                     for (int i = 0; i < ARObjects.Count; i++)
@@ -496,6 +726,8 @@ public class enableAR : NetworkBehaviour
                 if (Input.GetKeyUp(KeyCode.E) && multiplayerMenu.activeSelf == false)
                 {
                     PowerDOWN.Play();
+                    volume2.enabled = true;
+                    volume1.enabled = false;
                  
                 }
             }  

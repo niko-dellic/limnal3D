@@ -140,7 +140,7 @@ TextMesh:
   m_Font: {fileID: 12800000, guid: 761cd56ec44ea7b42bd6e835cc0f6dae, type: 3}
   m_Color:
     serializedVersion: 2
-    rgba: 4279164903
+    rgba: 4279123431
 --- !u!1 &2425467486958549875
 GameObject:
   m_ObjectHideFlags: 0
@@ -165,7 +165,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2425467486958549875}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.811, z: 3.46}
+  m_LocalPosition: {x: 0, y: 0.811, z: 2.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5883091876794213538}
@@ -499,7 +499,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 86fa3c4c6dcdb7847ae7a7f812f0378b, type: 2}
-  m_audioClip: {fileID: 8300000, guid: c04c7e627ebe1db47a4bf01bd8418e21, type: 3}
+  m_audioClip: {fileID: 8300000, guid: ece9f47d77e99fa42bac221f201bb90e, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -597,8 +597,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98020eb18c2cdc84399f7a203a60d7cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  water: {fileID: 1512585213891678385, guid: 2ac5e3091ece1af469f7dd5defced85a, type: 3}
-  muteWater: 0
+  stepVolMin: 0.09
+  stepVolMax: 0.2
+  stepPitchMin: 0.2
+  stepPitchMax: 0.4
 --- !u!1 &8115992605942706204
 GameObject:
   m_ObjectHideFlags: 0

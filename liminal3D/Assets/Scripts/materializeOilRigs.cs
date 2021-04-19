@@ -14,8 +14,10 @@ public class materializeOilRigs : MonoBehaviour
         for (int i = 0; i < allChildren.Length; i++)
         {
             // Debug.Log(allChildren[i].name);  
-            allChildren[i].material = rigMaterial;
-
+            if (allChildren[i].GetComponent<MeshRenderer>() != null && allChildren[i].gameObject.layer != LayerMask.NameToLayer("PROTECTMATERIAL"))
+            {
+                allChildren[i].material = rigMaterial;
+            }
         }   
     }
 

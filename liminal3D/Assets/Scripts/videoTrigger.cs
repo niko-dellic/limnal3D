@@ -6,16 +6,25 @@ using Mirror;
 
 public class videoTrigger : NetworkBehaviour
 {
+
+    [HideInInspector]
+    public GameObject[] ditherArray;
+    private bool videoMode = false;
     public GameObject interactionTrigger;
+    public GameObject[] muteOtherAudioSources;
+
+    [Header("3DVideo")]
+    private bool resumeAR;
+    public GameObject postProcessingEmpty;
+    public GameObject VRSphere;
+
+    [Header("2DVideo")]
     public GameObject videoUI;
     public GameObject blackDrop;
+    public GameObject videoPlane;
+    public Material videoMaterial;
 
-    
     private double videoLength;
-
-    //public GameObject videoPlane;
-
-    //public Material videoMaterial;
 
     private double timer;
 
@@ -23,8 +32,54 @@ public class videoTrigger : NetworkBehaviour
 
     private int toggle = 0;
 
+    float ArUISpeedxRef;
+
+
+    private void ToggleDither(bool ditherSwitch)
+    {
+        for (int i = 0; i < ditherArray.Length; i++)
+        {
+            ditherArray[i].SetActive(ditherSwitch);    
+        }
+
+        if (ditherSwitch == false)
+        {
+            videoMode = true;
+        }
+
+        if (ditherSwitch == true)
+        {
+            videoMode = false;
+        }
+    }
+
+    private void muteExtraAudio(bool enableDisable)
+    {
+        for (int i = 0; i < muteOtherAudioSources.Length; i++)
+        {
+            if (muteOtherAudioSources[i].GetComponent<AudioSource>() != null)
+            {
+                muteOtherAudioSources[i].GetComponent<AudioSource>().mute = enableDisable;
+            }
+        }
+    }
+
     private void Start() {
-        videoLength = videoUI.GetComponent<VideoPlayer>().length;
+
+        ditherArray = GameObject.FindGameObjectsWithTag("DITHERZONE");
+
+        
+        if (videoUI != null)
+        {
+            videoLength = videoUI.GetComponent<VideoPlayer>().length;
+        }
+
+        if (VRSphere != null)
+        {
+            videoLength = VRSphere.GetComponent<VideoPlayer>().length;
+            ArUISpeedxRef = postProcessingEmpty.GetComponent<enableAR>().ArUISpeed;
+        }
+
         
     }
  
@@ -34,6 +89,7 @@ public class videoTrigger : NetworkBehaviour
         {
             inZone = true;
             interactionTrigger.SetActive(true);
+           
         }
     }
 
@@ -43,40 +99,100 @@ public class videoTrigger : NetworkBehaviour
             inZone = false;
             interactionTrigger.SetActive(false);
         }
-
-
-
     }
 
-    void Update() {
+    void LateUpdate() {
 
         if (inZone)
         {
-            
-            if(Input.GetKeyDown(KeyCode.Q))
+            if (VRSphere != null && VRSphere.activeSelf == true)
             {
-                toggle++;
-                  
+                VRSphere.transform.position = Camera.main.transform.position;
             }
 
-            if (Input.GetKeyDown(KeyCode.Q) && videoUI.activeSelf == true && toggle%2==0)
+            if(Input.GetKeyDown(KeyCode.Q))
             {
-                videoUI.SetActive(false);
+                toggle++;        
+            }
+
+            if (Input.GetKeyDown(KeyCode.Q)  && toggle%2==0) //&& videoUI.activeSelf == true
+            {
+                ToggleDither(true); //toggle dither On
                 
-                if (blackDrop != null)
+
+                muteExtraAudio(false);
+
+                // if (muteOtherAudio != null)
+                // {
+                //     muteOtherAudio.GetComponent<AudioSource>().mute = false;
+                // }
+                
+                
+                if (videoUI != null)
                 {
-                    blackDrop.SetActive(false);
+                    videoUI.SetActive(false);
+                    if (blackDrop != null)
+                    {
+                        blackDrop.SetActive(false);
+                    }
                 }
+
+
+                if (VRSphere != null)
+                {
+                    VRSphere.SetActive(false);
+                }
+
                 interactionTrigger.SetActive(true);
+
+                if (resumeAR){
+                fixAR();
+                }
             } 
  
-            if (Input.GetKeyDown(KeyCode.Q) && videoUI.activeSelf == false && toggle%2==1)
+            if (Input.GetKeyDown(KeyCode.Q) &&  toggle%2==1) //videoUI.activeSelf == false &&
             {
-                videoUI.SetActive(true);
+
+                //disable postPro Dither zones
+                ToggleDither(false);
+
+                muteExtraAudio(true);
+
+                // if (muteOtherAudio != null)
+                // {
+                //     muteOtherAudio.GetComponent<AudioSource>().mute = true;
+                // }
+
                 
-                if (blackDrop != null)
+                if (videoUI != null)
                 {
-                    blackDrop.SetActive(true);
+                    videoUI.SetActive(true);
+                
+                    if (blackDrop != null)
+                    {
+                        blackDrop.SetActive(true);
+                    }
+                }
+
+
+                if (VRSphere != null)
+                {   
+                    if (postProcessingEmpty.GetComponent<enableAR>().ARToggle == false)
+                    {
+                        resumeAR = false;
+                    }
+
+
+                    if (postProcessingEmpty.GetComponent<enableAR>().ARToggle == true)
+                    {
+                        resumeAR = true;
+                        postProcessingEmpty.GetComponent<enableAR>().ARToggle = false;
+                        postProcessingEmpty.GetComponent<enableAR>().lerp = true;
+                        postProcessingEmpty.GetComponent<enableAR>().timeTrigger = Time.time + ArUISpeedxRef;
+                    }
+                    
+                    VRSphere.SetActive(true);
+
                 }
 
                 timer = Time.time + videoLength;
@@ -84,37 +200,100 @@ public class videoTrigger : NetworkBehaviour
 
             } 
 
+
+
            if (Time.time > timer)
             {
-                videoUI.SetActive(false);
-                
-                if (blackDrop != null)
+                if (videoMode == true)
                 {
-                    blackDrop.SetActive(false);
+                    ToggleDither(true); //toggle dither On
+
+                    muteExtraAudio(false);
+
+                    // if (muteOtherAudio != null)
+                    // {
+                    //     muteOtherAudio.GetComponent<AudioSource>().mute = false;
+                    // }
+
+                    if (videoUI != null)
+                    {
+                        videoUI.SetActive(false);   
+                    }
+                    
+                    if (blackDrop != null)
+                    {
+                        blackDrop.SetActive(false);
+                    }
                 }
 
                 toggle = 0;
-                interactionTrigger.SetActive(true);
                 
-     
+                if (interactionTrigger.activeSelf == false)
+                {
+                    interactionTrigger.SetActive(true);
+                }
+
+                if (VRSphere != null && VRSphere.activeSelf == true)
+                {
+                    VRSphere.SetActive(false);
+                }
+
+                if (resumeAR){
+                fixAR();
+                }
+
             }
-
-
         }
 
         if (!inZone)
         {
-            videoUI.SetActive(false);
-            
-            if (blackDrop != null)
+            muteExtraAudio(false);
+            // if (muteOtherAudio != null)
+            // {
+            //     muteOtherAudio.GetComponent<AudioSource>().mute = false;
+            // }
+
+
+            if (videoMode == true)
             {
-                blackDrop.SetActive(false);
+                ToggleDither(true); //toggle dither On
+
+                if (videoUI != null)
+                {
+                    
+                    videoUI.SetActive(false);
+                    
+                    if (blackDrop != null)
+                    {
+                        blackDrop.SetActive(false);
+                    }
+                
+                }
+            }
+
+            if (resumeAR){
+            fixAR();
             }
             
             toggle = 0;
-            //interactionTrigger.SetActive(false);
+            
+            if (VRSphere != null && VRSphere.activeSelf == true)
+            {
+                VRSphere.SetActive(false);
+            }
         }
         
+        void fixAR()
+        {
+                if (resumeAR)
+                {
+                    postProcessingEmpty.GetComponent<enableAR>().ARToggle = true;
+                    postProcessingEmpty.GetComponent<enableAR>().lerp = true;
+                    float ArUISpeedxRef = postProcessingEmpty.GetComponent<enableAR>().ArUISpeed;
+                    postProcessingEmpty.GetComponent<enableAR>().timeTrigger = Time.time + ArUISpeedxRef;
+                    resumeAR = false;
+                }
+        }
     }
 
 

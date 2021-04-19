@@ -5,12 +5,18 @@ using UnityEngine;
 public class FootAudio : MonoBehaviour
 {
 
-       public GameObject water;
        muteSteps muteStepsScript;
        
-       public bool muteWater;
+
+       public float stepVolMin = 0.01f;
+       public float stepVolMax = 0.03f;
+       public float stepPitchMin = 0.8f;
+       public float stepPitchMax = 1.2f;
+
+       private float  horizontalVelocity;
           
-         CharacterController cc;
+       CharacterController cc;
+
        void Start () 
        {
               cc = GetComponent<CharacterController>();
@@ -19,15 +25,16 @@ public class FootAudio : MonoBehaviour
  
         void Update () 
        {
-              muteStepsScript = water.GetComponent<muteSteps>();
-              muteWater = muteStepsScript.inWater;
 
-              //Debug.Log(muteWater);
-
-              if (cc.isGrounded == true && cc.velocity.magnitude > 0f && GetComponent<AudioSource>().isPlaying == false && muteWater == false)
+              if (cc.isGrounded == true && cc.velocity.magnitude > 0f && GetComponent<AudioSource>().isPlaying == false)
               {
-                     GetComponent<AudioSource>().volume = Random.Range(0.01f, 0.03f);
-                     GetComponent<AudioSource>().pitch = Random.Range(0.8f, 1.2f);
+                     GetComponent<AudioSource>().volume = Random.Range(stepVolMin, stepVolMax);
+
+                     horizontalVelocity = this.gameObject.GetComponent<PlayerMovement>().speed;
+
+                     float newPitch = Mathf.Sqrt(horizontalVelocity) * Random.Range(stepPitchMin, stepPitchMax);
+                     GetComponent<AudioSource>().pitch = newPitch;
+
                      GetComponent<AudioSource>().Play();
               }
        }

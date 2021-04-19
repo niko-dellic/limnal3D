@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class screenSaverMaster : MonoBehaviour
 {
+    [Header("Video Override")]
+    public GameObject VRSphere;
+    public GameObject VRSphere2;
+
+    
     [Header("AFK TIMER")]
     public int AFKTimeout = 3;
 
@@ -72,9 +77,10 @@ public class screenSaverMaster : MonoBehaviour
     }
 
    
+
     void playerIdle()
     {
-        if (AFK)
+        if (AFK && VRSphere.activeSelf == false && VRSphere2.activeSelf == false)
         {
             //Disable Main Cameras
             //mainCam.enabled = false;

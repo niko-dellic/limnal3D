@@ -25,6 +25,11 @@ TagManager:
   - RealOnly
   - TEST
   - HYBRID
+  - Carriage
+  - POSTPRO
+  - MINIMAP3D
+  - SECTION3D
+  - DITHERZONE
   layers:
   - Default
   - TransparentFX
@@ -35,10 +40,10 @@ TagManager:
   - SPAWN
   - POINTER
   - 3DGUI
-  - 
-  - 
-  - 
-  - 
+  - MINIMAP3D
+  - FLOORIGNORE
+  - MINISECTION3D
+  - PROTECTMATERIAL
   - 
   - 
   - 

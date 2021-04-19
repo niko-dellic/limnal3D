@@ -53,13 +53,13 @@ public class TeleportPlayer : MonoBehaviour
 
             else
             {
-                other.transform.position = teleportTarget.transform.position;
+                other.transform.position = teleportObject.transform.position;
             }
             
 
             if (inheritRotation)
             {
-                other.transform.rotation = teleportTarget.transform.rotation;  
+                other.transform.rotation = teleportObject.transform.rotation;  
             }
 
 
@@ -68,14 +68,7 @@ public class TeleportPlayer : MonoBehaviour
     }
 
     private void Update() {
-    
-        if (sceneName == "TESTING") 
-        {   
-            if (!teleportObject.gameObject.activeSelf)
-            {
-                Debug.Log("not active");
-            } 
-        }
+
 
     }
 
